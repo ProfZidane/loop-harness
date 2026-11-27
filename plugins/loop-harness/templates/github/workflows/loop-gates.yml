@@ -1,0 +1,21 @@
+name: loop-gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    uses: ProfZidane/loop-harness/.github/workflows/gates.yml@main
+    with:
+      working-directory: .
+      config: .loop/config.yml
+
+# Branch protection on main (Settings > Branches):
+# - require a pull request before merging is NOT required (the loop merges low-risk work directly)
+# - require status checks: "gates / quality" and "gates / security"
+# - block force pushes and deletions

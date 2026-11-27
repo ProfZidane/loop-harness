@@ -1,0 +1,145 @@
+name: loop-gates
+
+# Reusable deterministic gates. Every command comes from the project's .loop/config.yml.
+# Call it from a project with templates/github/workflows/loop-gates.yml.
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Project root, relative to the repository root
+        type: string
+        default: .
+      config:
+        description: Path of the loop config, relative to the project root
+        type: string
+        default: .loop/config.yml
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read loop config
+        id: config
+        run: |
+          cfg="${{ inputs.config }}"
+          test -f "$cfg" || { echo "Missing $cfg"; exit 1; }
+          read_key() { yq -r "$1 // \"\"" "$cfg"; }
+          {
+            echo "languages=$(yq -o=json -I=0 '.project.languages // []' "$cfg")"
+            for key in install lint typecheck test build deadCode; do
+              echo "$key=$(read_key ".commands.$key")"
+            done
+            echo "coverage_report=$(read_key '.tests.coverageReport')"
+            echo "coverage_threshold=$(read_key '.tests.diffCoverage.threshold')"
+            echo "coverage_paths=$(yq -r '(.tests.diffCoverage.paths // []) | join(" ")' "$cfg")"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        if: contains(fromJSON(steps.config.outputs.languages), 'typescript') || contains(fromJSON(steps.config.outputs.languages), 'javascript')
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        if: contains(fromJSON(steps.config.outputs.languages), 'python')
+        with:
+          python-version: '3.13'
+
+      - name: Install
+        if: steps.config.outputs.install != ''
+        env:
+          CMD: ${{ steps.config.outputs.install }}
+        run: bash -c "$CMD"
+
+      - name: Lint
+        if: steps.config.outputs.lint != ''
+        env:
+          CMD: ${{ steps.config.outputs.lint }}
+        run: bash -c "$CMD"
+
+      - name: Type check
+        if: steps.config.outputs.typecheck != ''
+        env:
+          CMD: ${{ steps.config.outputs.typecheck }}
+        run: bash -c "$CMD"
+
+      - name: Tests
+        if: steps.config.outputs.test != ''
+        env:
+          CMD: ${{ steps.config.outputs.test }}
+        run: bash -c "$CMD"
+
+      - name: Dead code
+        if: steps.config.outputs.deadCode != ''
+        env:
+          CMD: ${{ steps.config.outputs.deadCode }}
+        run: bash -c "$CMD"
+
+      - name: Build
+        if: steps.config.outputs.build != ''
+        env:
+          CMD: ${{ steps.config.outputs.build }}
+        run: bash -c "$CMD"
+
+      - name: Diff coverage
+        if: github.event_name == 'pull_request' && steps.config.outputs.coverage_report != '' && steps.config.outputs.coverage_threshold != ''
+        working-directory: .
+        env:
+          WORKDIR: ${{ inputs.working-directory }}
+          REPORT: ${{ steps.config.outputs.coverage_report }}
+          THRESHOLD: ${{ steps.config.outputs.coverage_threshold }}
+          PATHS: ${{ steps.config.outputs.coverage_paths }}
+          BASE: ${{ github.base_ref }}
+        run: |
+          pipx install diff-cover
+          prefix=""
+          [ "$WORKDIR" != "." ] && prefix="${WORKDIR%/}/"
+          includes=()
+          for path in $PATHS; do includes+=("${prefix}${path}"); done
+          args=("${prefix}${REPORT}" "--compare-branch=origin/${BASE}" "--fail-under=${THRESHOLD}")
+          [ ${#includes[@]} -gt 0 ] && args+=("--include" "${includes[@]}")
+          diff-cover "${args[@]}"
+
+  security:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secrets (gitleaks)
+        working-directory: .
+        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:latest detect --source /repo --no-banner --redact
+
+      - name: SAST (semgrep)
+        run: |
+          pipx install semgrep
+          semgrep scan --config p/default --config p/owasp-top-ten --error --metrics=off --exclude node_modules
+
+      - name: Read audit command
+        id: audit
+        run: echo "command=$(yq -r '.commands.audit // ""' "${{ inputs.config }}")" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        if: startsWith(steps.audit.outputs.command, 'npm')
+        with:
+          node-version: 22
+
+      - name: Dependency audit
+        if: steps.audit.outputs.command != ''
+        env:
+          CMD: ${{ steps.audit.outputs.command }}
+        run: bash -c "$CMD"

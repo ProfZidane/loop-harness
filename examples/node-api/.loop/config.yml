@@ -1,0 +1,19 @@
+project:
+  name: example-node-api
+  languages: [typescript]
+  stacks: [express]
+
+commands:
+  install: npm ci && npm ci --prefix ../../packages/eslint-config
+  lint: npm run lint
+  typecheck: npm run typecheck
+  test: npm run test:coverage
+  build: ""
+  deadCode: npm run dead-code
+  audit: npm audit --audit-level=high
+
+tests:
+  coverageReport: coverage/cobertura-coverage.xml
+  diffCoverage:
+    threshold: 80
+    paths: [src/services/**]

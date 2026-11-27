@@ -20,8 +20,10 @@ commands:
   coverage: npm run test:coverage
   build: npm run build
   deadCode: npx knip
+  audit: npm audit --audit-level=high
 
 tests:
+  coverageReport: coverage/cobertura-coverage.xml   # Cobertura XML, any language
   diffCoverage:
     threshold: 80
     paths: [src/services/**]

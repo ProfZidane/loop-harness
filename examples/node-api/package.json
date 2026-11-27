@@ -1,0 +1,19 @@
+{
+  "name": "loop-harness-example-node-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "dead-code": "knip"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^5.1.2",
+    "eslint": "^10.15.0",
+    "knip": "^6.48.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.2"
+  }
+}

@@ -29,3 +29,8 @@ jobs:
         with:
           node-version: 22
       - run: npx -y @anthropic-ai/claude-code plugin validate .
+
+  example-gates:
+    uses: ./.github/workflows/gates.yml
+    with:
+      working-directory: examples/node-api
