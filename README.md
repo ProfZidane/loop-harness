@@ -29,6 +29,7 @@ plugins/loop-harness/
   scripts/
     gates/           dependency-free checks: emoji, commit messages, branch names
     hooks/guard.mjs  PreToolUse guard: protected paths, no emoji, gates before commit
+    docs/diagram.mjs renders C4 diagrams from a JSON spec in the house style
     loop-init.mjs    deterministic project setup used by the loop-init skill
   agents/            planner, plan-reviewer, builder, code-reviewer, spec-reviewer, security-reviewer
   hooks/hooks.json   registers the guard
@@ -36,6 +37,7 @@ plugins/loop-harness/
     eslint/          ESLint presets for the [LINT] rules, copied into projects by loop-init
   skills/
     loop-init/       sets up a project for the loop
+    docs-writer/     C4 diagrams, data model, ADR, COE
   templates/         copied into a project by loop-init
     loop.config.yml  becomes .loop/config.yml
     loop/plan.md     plan structure used by the planner

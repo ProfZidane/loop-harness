@@ -24,7 +24,7 @@ docs/
 ## architecture.md
 
 - C4 levels: **C1 Context**, **C2 Containers**, **C3 Components** (one per container that has real internal structure). No C4 code level.
-- Each level = one SVG in `docs/assets/` (real schematic, icons for actors, apps, databases, third parties), embedded in the Markdown.
+- Each level = one SVG in `docs/assets/`, embedded in the Markdown. The SVG is generated from a JSON spec stored next to it by the house renderer (skill `docs-writer`); never hand-edit the SVG.
 - Under each diagram: a short `Notes` list that backs up key facts (protocols, why a boundary exists, constraints).
 - Updated in the same PR as any change that adds, removes or rewires a container or component. [REVIEW]
 

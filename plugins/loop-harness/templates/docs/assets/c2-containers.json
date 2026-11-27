@@ -1,0 +1,19 @@
+{
+  "title": "C2: Containers",
+  "subtitle": "Example shop: what runs where and how it talks",
+  "boundary": { "label": "Example shop", "x": 200, "y": 20, "width": 560, "height": 400 },
+  "nodes": [
+    { "id": "seller", "kind": "person", "title": "Seller", "tech": "Person", "x": 30, "y": 130 },
+    { "id": "web", "kind": "container", "title": "Web app", "tech": "Angular, Vercel", "desc": "UI, client state", "x": 230, "y": 120 },
+    { "id": "api", "kind": "container", "title": "API", "tech": "Express, Railway", "desc": "Business logic, auth", "x": 530, "y": 120 },
+    { "id": "db", "kind": "database", "title": "Database", "tech": "PostgreSQL", "x": 540, "y": 270 },
+    { "id": "stripe", "kind": "external", "title": "Stripe", "tech": "Payments", "x": 820, "y": 125 }
+  ],
+  "edges": [
+    { "from": "seller", "to": "web", "label": "uses, HTTPS" },
+    { "from": "web", "to": "api", "label": "JSON, HTTPS" },
+    { "from": "api", "to": "db", "label": "SQL" },
+    { "from": "api", "to": "stripe", "label": "REST" },
+    { "from": "stripe", "to": "api", "label": "webhooks", "async": true }
+  ]
+}
