@@ -29,6 +29,8 @@ plugins/loop-harness/
     claude/          CLAUDE.md, .claude/settings.json
     github/          issue and pull request templates
     docs/            architecture.md, data-model.md, adr/, coe/
+packages/
+  eslint-config/     shareable ESLint presets for the [LINT] rules
 docs/assets/         diagrams of this repository
 ```
 
