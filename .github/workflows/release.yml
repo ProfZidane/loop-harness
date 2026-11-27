@@ -1,0 +1,22 @@
+name: release
+
+# release-please keeps one release PR open with the next semver version and the changelog.
+# Merging that PR (always a human action) creates the tag vX.Y.Z and the GitHub Release.
+# Requires: Settings > Actions > General > "Allow GitHub Actions to create and approve pull requests".
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

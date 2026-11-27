@@ -53,7 +53,7 @@ No stack is imposed. The stack is chosen per project at kickoff and recorded in 
 - Test what matters and the critical path, never for the numbers. A worthless test (getter, trivial mapping, useless snapshot) is rejected. [REVIEW]
 - **TDD**: acceptance criteria → failing test → code → green; test and code in the same commit; every acceptance criterion has at least one test. [REVIEW]
 - Coverage at least 80 % of the diff on business logic folders (paths in `.loop/config.yml`), blocking; elsewhere the reviewer judges relevance. [CI]
-- Gates per language: linter, formatter, type checker, dead code detection, plus commitlint. The language pack names the tools. [CI + pre-commit]
+- Gates per language: linter, formatter, type checker, dead code detection, plus the convention gates of `packages/gates` (emoji, commit, branch). The language pack names the tools. [CI + pre-commit]
 
 ## 5. Git, versions and releases
 
@@ -62,7 +62,7 @@ No stack is imposed. The stack is chosen per project at kickoff and recorded in 
 - `main` is always deployable. No `develop` branch, no long-lived branches.
 - One short-lived branch per ticket, merged into `main` (directly by the loop when low risk, through a PR otherwise).
 - Branch: `type/kebab-description` (`feat/expenses-pagination`). [CI]
-- Commit: **one line**, English, no emoji, **no `Co-Authored-By`**, format `type(scope): description` (`feat(expense): add pagination to list`). Breaking change: `type(scope)!: description`. [CI commitlint + attribution disabled in Claude Code settings]
+- Commit: **one line**, English, no emoji, **no `Co-Authored-By`**, format `type(scope): description` (`feat(expense): add pagination to list`). Breaking change: `type(scope)!: description`. Max 72 characters, lowercase, no final period. [CI loop-check-commit + attribution disabled in Claude Code settings]
 - Merge strategy: squash merge; the squash commit follows the commit format.
 
 ### Versions and tags

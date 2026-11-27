@@ -64,6 +64,7 @@ loop:
 release:
   strategy: batch          # batch | per-merge | manual
   tool: release-please
+  releaseType: simple      # release-please type: node | python | dart | simple
   tagPrefix: v             # monorepo: "<package>-v"
   mobile:
     enabled: false

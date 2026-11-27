@@ -29,10 +29,16 @@ plugins/loop-harness/
   templates/         copied into a project by loop-init
     loop.config.yml  becomes .loop/config.yml
     claude/          CLAUDE.md, .claude/settings.json
-    github/          issue and pull request templates
+    github/          issue, pull request and workflow templates (gates, release, mobile build)
+    release/         release-please config and manifest
     docs/            architecture.md, data-model.md, adr/, coe/
 packages/
   eslint-config/     shareable ESLint presets for the [LINT] rules
+  gates/             dependency-free checks: emoji, commit messages, branch names
+examples/
+  node-api/          minimal project wired to the gates, tested in CI
+.github/workflows/
+  gates.yml          reusable CI gates, driven by .loop/config.yml
 docs/assets/         diagrams of this repository
 ```
 
