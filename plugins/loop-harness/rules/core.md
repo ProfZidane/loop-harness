@@ -53,7 +53,7 @@ No stack is imposed. The stack is chosen per project at kickoff and recorded in 
 - Test what matters and the critical path, never for the numbers. A worthless test (getter, trivial mapping, useless snapshot) is rejected. [REVIEW]
 - **TDD**: acceptance criteria → failing test → code → green; test and code in the same commit; every acceptance criterion has at least one test. [REVIEW]
 - Coverage at least 80 % of the diff on business logic folders (paths in `.loop/config.yml`), blocking; elsewhere the reviewer judges relevance. [CI]
-- Gates per language: linter, formatter, type checker, dead code detection, plus the convention gates of `packages/gates` (emoji, commit, branch). The language pack names the tools. [CI + pre-commit]
+- Gates per language: linter, formatter, type checker, dead code detection, plus the convention gates of `scripts/gates` (emoji, commit, branch). The language pack names the tools. [CI + pre-commit]
 
 ## 5. Git, versions and releases
 

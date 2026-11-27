@@ -26,6 +26,11 @@ plugins/loop-harness/
     loop.md          loop behaviour and limits
     languages/       one pack per language: typescript.md
     stacks/          one pack per stack: express.md, mongo.md, angular.md
+  scripts/
+    gates/           dependency-free checks: emoji, commit messages, branch names
+    loop-init.mjs    deterministic project setup used by the loop-init skill
+  skills/
+    loop-init/       sets up a project for the loop
   templates/         copied into a project by loop-init
     loop.config.yml  becomes .loop/config.yml
     claude/          CLAUDE.md, .claude/settings.json
@@ -34,7 +39,6 @@ plugins/loop-harness/
     docs/            architecture.md, data-model.md, adr/, coe/
 packages/
   eslint-config/     shareable ESLint presets for the [LINT] rules
-  gates/             dependency-free checks: emoji, commit messages, branch names
 examples/
   node-api/          minimal project wired to the gates, tested in CI
 .github/workflows/

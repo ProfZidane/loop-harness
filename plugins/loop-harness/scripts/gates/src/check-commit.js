@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { findEmoji } from '../../eslint-config/src/emoji.js';
+import { findEmoji } from './emoji.js';
 import { commitMessages } from './git.js';
 import { parseArgs, report } from './args.js';
 

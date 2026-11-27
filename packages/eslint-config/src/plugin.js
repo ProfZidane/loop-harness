@@ -1,4 +1,4 @@
-import { findEmoji } from './emoji.js';
+import { findEmoji } from '../../../plugins/loop-harness/scripts/gates/src/emoji.js';
 
 const TODO_WITHOUT_ISSUE = /\b(TODO|FIXME|XXX)\b(?!\(#\d+\))/;
 

@@ -147,12 +147,12 @@ jobs:
         env:
           RANGE: ${{ steps.range.outputs.value }}
           PR_TEXT: ${{ github.event.pull_request.title }} ${{ github.event.pull_request.body }}
-        run: node .loop-harness/packages/gates/src/check-emoji.js --range "$RANGE" --text "$PR_TEXT"
+        run: node .loop-harness/plugins/loop-harness/scripts/gates/src/check-emoji.js --range "$RANGE" --text "$PR_TEXT"
 
       - name: Commit messages
         env:
           RANGE: ${{ steps.range.outputs.value }}
-        run: node .loop-harness/packages/gates/src/check-commit.js --range "$RANGE"
+        run: node .loop-harness/plugins/loop-harness/scripts/gates/src/check-commit.js --range "$RANGE"
 
       - name: Pull request title and branch
         if: github.event_name == 'pull_request'
@@ -160,8 +160,8 @@ jobs:
           TITLE: ${{ github.event.pull_request.title }}
           BRANCH: ${{ github.head_ref }}
         run: |
-          node .loop-harness/packages/gates/src/check-commit.js --text "$TITLE"
-          node .loop-harness/packages/gates/src/check-branch.js --name "$BRANCH"
+          node .loop-harness/plugins/loop-harness/scripts/gates/src/check-commit.js --text "$TITLE"
+          node .loop-harness/plugins/loop-harness/scripts/gates/src/check-branch.js --name "$BRANCH"
 
   security:
     runs-on: ubuntu-latest
