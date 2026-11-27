@@ -25,7 +25,10 @@ The orchestrator owns the state machine. Agents work freely inside a step; trans
 
 ## Triggers
 
-- Ticket-driven: the orchestrator polls `loop:ready` issues every 5 minutes (no webhook, the loop runs locally).
+- Ticket-driven, default: the orchestrator polls `loop:ready` issues every 5 minutes, oldest first (no webhook, the loop runs locally).
+- Ticket-driven, optional: a self-hosted GitHub Actions runner on the owner's machine starts the loop on the `issues: labeled` event. Private repositories only.
+- Claiming: the orchestrator swaps `loop:ready` for `loop:planning` before any work, so a ticket is never taken twice.
+- Anyone with write access to the repository may trigger the loop; projects are private.
 - Modes, combinable in `.loop/config.yml`: manual `loop run`, continuous daemon, time window.
 
 ## Parallelism
