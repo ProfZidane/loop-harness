@@ -1,52 +1,47 @@
 # loop-harness
 
-A guarded autonomous development loop for Claude Code. Drop it on any project: it takes tickets, plans, builds with TDD, runs deterministic gates, reviews code, spec and security, merges low-risk work and sends sensitive work to you.
+Guarded autonomous development loop for Claude Code. Install it once, use it on any project: it takes tickets, plans, builds with TDD, runs deterministic gates, reviews code, spec and security, merges low-risk work and sends sensitive work to you.
 
-Claude does the thinking inside each step. Transitions, limits and risk classification are code, never an agent decision.
+![Pipeline](./docs/assets/pipeline.svg)
 
-## Pipeline
+## Principles
 
-```
-issue loop:ready
-  → planner ─→ plan gate (human if sensitive / core business / third party / real trade-off)
-  → builder (TDD, own worktree)
-  → deterministic gates: lint · tsc · tests · diff coverage · knip · gitleaks · semgrep · npm audit
-  → reviewers: code · spec · security (fresh context)
-  → fix (max 3)
-  → risk classifier ─→ low: merge main │ sensitive: PR + notify
-  → deploy check (Vercel / Railway) ─→ KO: one guarded hotfix, else revert + COE
-```
+| Principle | Meaning |
+|---|---|
+| Deterministic control | Agents decide inside a step. Transitions, limits and risk are code. |
+| Risk only goes up | The loop can mark a ticket sensitive, never the opposite. |
+| Human on what matters | Sensitive zones, core business, third parties, real trade-offs, releases. |
+| Rules as source of truth | Every agent reads `rules/`. Every rule names its enforcement: lint, CI, review or PR. |
 
 ## Layout
 
 ```
-.claude-plugin/marketplace.json      marketplace (this repo)
+.claude-plugin/marketplace.json
 plugins/loop-harness/
-├── .claude-plugin/plugin.json
-├── rules/                           source of truth for every agent
-│   ├── core.md                      stack-agnostic rules and decision method
-│   ├── docs.md                      documentation conventions (C4, data model, ADR, COE)
-│   ├── loop.md                      loop behaviour and limits
-│   └── stacks/                      express.md · mongo.md · angular.md
-└── templates/                       copied into a project by /loop-init
-    ├── loop.config.yml              → .loop/config.yml
-    ├── claude/                      → CLAUDE.md, .claude/settings.json
-    ├── github/                      → issue template, PR template
-    └── docs/                        → architecture.md, data-model.md, adr/, coe/
+  .claude-plugin/plugin.json
+  rules/
+    core.md          stack-agnostic rules and decision method
+    docs.md          documentation conventions
+    loop.md          loop behaviour and limits
+    stacks/          express.md, mongo.md, angular.md
+  templates/         copied into a project by loop-init
+    loop.config.yml  becomes .loop/config.yml
+    claude/          CLAUDE.md, .claude/settings.json
+    github/          issue and pull request templates
+    docs/            architecture.md, data-model.md, adr/, coe/
+docs/assets/         diagrams of this repository
 ```
 
 ## Install
 
 ```bash
-claude plugin marketplace add <owner>/loop-harness
+claude plugin marketplace add ProfZidane/loop-harness
 claude plugin install loop-harness@loop-harness
 ```
 
-Then in a project: `/loop-harness:loop-init` (coming in v0.2).
-
 ## Status
 
-v0.1: rules and templates. See [ROADMAP.md](./ROADMAP.md).
+Rules and templates are available. Gates, agents and orchestrator are tracked in [issues](https://github.com/ProfZidane/loop-harness/issues), grouped by version label.
 
 ## License
 

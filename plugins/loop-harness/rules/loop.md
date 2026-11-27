@@ -4,20 +4,19 @@ The orchestrator owns the state machine. Agents work freely inside a step; trans
 
 ## Pipeline
 
-```
-issue loop:ready
-  → PLANNER            plan.md (+ HTML mockup if UI) with files to touch, risks, tests to write
-  → PLAN GATE          human review if a trigger fires, else PLAN REVIEWER (core.md §0)
-  → BUILDER            TDD in its own git worktree and branch
-  → DETERMINISTIC GATES lint, tsc, tests, coverage, knip, gitleaks, semgrep, npm audit
-  → REVIEWERS          code conformity · spec conformity · security (fresh context, diff + ticket + rules only)
-  → FIX                max 3 review/fix iterations
-  → RISK CLASSIFIER    paths + diff analysis (core.md §8)
-  → low risk: merge to main     sensitive: PR + human reviewer + notification
-  → DEPLOY CHECK       Vercel / Railway CLI
-  → issue loop:done    + docs updated (architecture, data-model, ADR)
-  → RELEASE            release-please keeps the release PR up to date; the human merges it → tag + GitHub Release
-```
+| Step | Owner | Output |
+|---|---|---|
+| 1. Ticket | GitHub issue `loop:ready` | context, acceptance criteria, out of scope |
+| 2. Planner | agent | plan.md: approach, files to touch, risks, tests per criterion, HTML mockup if UI |
+| 3. Plan gate | human if a trigger fires, else plan reviewer agent | approved plan, ADR if a trade-off was settled |
+| 4. Builder | agent | TDD commits in its own worktree and branch |
+| 5. Gates | deterministic | lint, tsc, tests, diff coverage, knip, gitleaks, semgrep, npm audit |
+| 6. Reviewers | 3 agents, fresh context | code, spec and security verdicts |
+| 7. Fix | builder agent | max 3 review/fix iterations |
+| 8. Risk classifier | deterministic | low risk: merge to main; sensitive: PR + human reviewer + notification |
+| 9. Deploy check | deterministic | Vercel and Railway status |
+| 10. Done | orchestrator | issue `loop:done`, docs updated |
+| 11. Release | release-please + human | release PR merged by the human, tag and GitHub Release |
 
 ## Ticket source
 
@@ -41,7 +40,7 @@ issue loop:ready
 ## Plan gate: human validation (plan + static HTML mockup for UI)
 
 Triggered when any of these is true:
-- a sensitive zone is touched (core.md §8);
+- a sensitive zone is touched (core.md section 8);
 - the planner found ≥ 2 viable approaches with real trade-offs (the human choice becomes an ADR);
 - core business: issue labelled `core-business`, or plan touches `coreBusiness.paths` from `.loop/config.yml`;
 - third-party integration (Stripe…): new third-party SDK, new API-key env var, inbound webhook, outbound call to a new domain.

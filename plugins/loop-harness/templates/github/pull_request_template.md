@@ -14,8 +14,8 @@ Closes #
 
 ## Gates
 
-- [ ] lint · tsc · tests · diff coverage · knip
-- [ ] gitleaks · semgrep · npm audit
+- [ ] lint, tsc, tests, diff coverage, knip
+- [ ] gitleaks, semgrep, npm audit
 
 ## Reviews
 
@@ -25,4 +25,4 @@ Closes #
 
 ## Docs
 
-- [ ] architecture.md · data-model.md · ADR updated if needed
+- [ ] architecture.md, data-model.md, ADR updated if needed

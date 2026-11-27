@@ -1,6 +1,6 @@
 # COE: <incident title>
 
-- Date: YYYY-MM-DD · Duration: · Severity: low | medium | high
+- Date: YYYY-MM-DD, Duration:, Severity: low | medium | high
 - Detected by: loop deploy check | monitoring | human
 - Related: merge commit, hotfix issue #, revert commit
 

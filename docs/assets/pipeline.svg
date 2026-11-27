@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker><filter id="sh" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.14"/></filter></defs>
+<rect width="1200" height="680" fill="#fff"/>
+<text x="30" y="38" font-size="18" font-weight="700" fill="#0f172a">loop-harness pipeline</text>
+<text x="30" y="58" font-size="12" fill="#64748b">Agents work inside a step. Transitions, limits and risk classification are code.</text>
+<g filter="url(#sh)"><rect x="30" y="120" width="160" height="100" rx="10" fill="#334155"/></g>
+<g transform="translate(44,134)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="0" y="2" width="22" height="16" rx="2"/><line x1="5" y1="8" x2="17" y2="8"/><line x1="5" y1="12" x2="13" y2="12"/></g>
+<text x="44" y="176" font-size="14" font-weight="700" fill="#fff">Ticket</text>
+<text x="44" y="194" font-size="11" fill="#e2e8f0">GitHub issue</text>
+<text x="44" y="209" font-size="11" fill="#e2e8f0">label loop:ready</text>
+<g filter="url(#sh)"><rect x="225" y="120" width="160" height="100" rx="10" fill="#2563eb"/></g>
+<g transform="translate(239,134)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2,2 h14 l4,4 v14 h-18 z"/><line x1="6" y1="10" x2="16" y2="10"/><line x1="6" y1="14" x2="14" y2="14"/></g>
+<text x="239" y="176" font-size="14" font-weight="700" fill="#fff">Planner</text>
+<text x="239" y="194" font-size="11" fill="#e2e8f0">plan, files, risks,</text>
+<text x="239" y="209" font-size="11" fill="#e2e8f0">tests, mockup if UI</text>
+<g filter="url(#sh)"><rect x="420" y="120" width="160" height="100" rx="10" fill="#2563eb"/></g>
+<g transform="translate(434,134)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M0,10 C4,3 16,3 20,10 C16,17 4,17 0,10 Z"/><circle cx="10" cy="10" r="3"/></g>
+<text x="434" y="176" font-size="14" font-weight="700" fill="#fff">Plan gate</text>
+<text x="434" y="194" font-size="11" fill="#e2e8f0">plan reviewer</text>
+<text x="434" y="209" font-size="11" fill="#e2e8f0">or human</text>
+<g filter="url(#sh)"><rect x="615" y="120" width="160" height="100" rx="10" fill="#2563eb"/></g>
+<g transform="translate(629,134)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6,4 L0,10 L6,16 M16,4 L22,10 L16,16 M13,2 L9,18"/></g>
+<text x="629" y="176" font-size="14" font-weight="700" fill="#fff">Builder</text>
+<text x="629" y="194" font-size="11" fill="#e2e8f0">TDD in its own</text>
+<text x="629" y="209" font-size="11" fill="#e2e8f0">worktree and branch</text>
+<g filter="url(#sh)"><rect x="810" y="120" width="160" height="100" rx="10" fill="#334155"/></g>
+<g transform="translate(824,134)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="9"/><path d="M5,10 l4,4 l7,-8"/></g>
+<text x="824" y="176" font-size="14" font-weight="700" fill="#fff">Gates</text>
+<text x="824" y="194" font-size="11" fill="#e2e8f0">lint, tsc, tests, coverage,</text>
+<text x="824" y="209" font-size="11" fill="#e2e8f0">knip, secrets, SAST, CVE</text>
+<g filter="url(#sh)"><rect x="1005" y="120" width="160" height="100" rx="10" fill="#2563eb"/></g>
+<g transform="translate(1019,134)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10,1 L19,4 V10 C19,15 15,18 10,20 C5,18 1,15 1,10 V4 Z"/><path d="M6,10 l3,3 l5,-6"/></g>
+<text x="1019" y="176" font-size="14" font-weight="700" fill="#fff">Reviewers</text>
+<text x="1019" y="194" font-size="11" fill="#e2e8f0">code, spec, security</text>
+<text x="1019" y="209" font-size="11" fill="#e2e8f0">fresh context</text>
+<path d="M190,170.0 L221,170.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M385,170.0 L416,170.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M580,170.0 L611,170.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M775,170.0 L806,170.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M970,170.0 L1001,170.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M1085.0,120 C1085.0,72 695.0,72 695.0,116" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="890.0" y="80" text-anchor="middle" font-size="11" fill="#334155">fix loop, max 3 iterations, else blocked + notify</text>
+<g filter="url(#sh)"><rect x="420" y="262" width="160" height="84" rx="10" fill="#b45309"/></g>
+<g transform="translate(434,276)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="6" r="4"/><path d="M2,19 C2,13 18,13 18,19"/></g>
+<text x="434" y="318" font-size="14" font-weight="700" fill="#fff">You</text>
+<text x="434" y="336" font-size="11" fill="#e2e8f0">validate plan + mockup</text>
+<path d="M500.0,220 L500.0,258" fill="none" stroke="#b45309" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+<text x="508.0" y="242" text-anchor="start" font-size="11" fill="#b45309">if sensitive, core business,</text>
+<text x="508.0" y="256" text-anchor="start" font-size="11" fill="#b45309">third party or real trade-off</text>
+<path d="M1085.0,220 L1085.0,370 L110.0,370 L110.0,426" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<g filter="url(#sh)"><rect x="30" y="430" width="160" height="100" rx="10" fill="#334155"/></g>
+<g transform="translate(44,444)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2,10 H8 L14,3 H20 M8,10 L14,17 H20"/></g>
+<text x="44" y="486" font-size="14" font-weight="700" fill="#fff">Risk classifier</text>
+<text x="44" y="504" font-size="11" fill="#e2e8f0">file paths + diff</text>
+<text x="44" y="519" font-size="11" fill="#e2e8f0">can only raise risk</text>
+<g filter="url(#sh)"><rect x="260" y="380" width="160" height="84" rx="10" fill="#0f766e"/></g>
+<g transform="translate(274,394)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4" r="3"/><circle cx="4" cy="17" r="3"/><circle cx="17" cy="10" r="3"/><path d="M4,7 V14 M4,7 C4,10 14,10 14,10"/></g>
+<text x="274" y="436" font-size="14" font-weight="700" fill="#fff">Merge to main</text>
+<text x="274" y="454" font-size="11" fill="#e2e8f0">low risk</text>
+<g filter="url(#sh)"><rect x="260" y="496" width="160" height="84" rx="10" fill="#b45309"/></g>
+<g transform="translate(274,510)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4" r="3"/><circle cx="4" cy="17" r="3"/><circle cx="17" cy="17" r="3"/><path d="M4,7 V14 M17,14 V8 C17,5 15,4 12,4 H9"/></g>
+<text x="274" y="552" font-size="14" font-weight="700" fill="#fff">Pull request</text>
+<text x="274" y="570" font-size="11" fill="#e2e8f0">you review, notified</text>
+<path d="M190,465 L256,422" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M190,495 L256,538" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<g filter="url(#sh)"><rect x="490" y="430" width="160" height="100" rx="10" fill="#334155"/></g>
+<g transform="translate(504,444)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5,17 C1,17 0,13 3,11 C3,6 9,5 11,8 C13,4 19,6 18,11 C21,12 21,17 17,17 Z"/></g>
+<text x="504" y="486" font-size="14" font-weight="700" fill="#fff">Deploy check</text>
+<text x="504" y="504" font-size="11" fill="#e2e8f0">Vercel, Railway CLI</text>
+<path d="M420,422 L486,465" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M420,538 L486,495" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<g filter="url(#sh)"><rect x="720" y="430" width="160" height="100" rx="10" fill="#0f766e"/></g>
+<g transform="translate(734,444)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3,1 h10 l5,5 v14 h-15 z"/><path d="M6,14 l3,3 l6,-7"/></g>
+<text x="734" y="486" font-size="14" font-weight="700" fill="#fff">Done</text>
+<text x="734" y="504" font-size="11" fill="#e2e8f0">issue closed, docs,</text>
+<text x="734" y="519" font-size="11" fill="#e2e8f0">ADR updated</text>
+<path d="M650,480.0 L716,480.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="685" y="472.0" text-anchor="middle" font-size="11" fill="#334155">ok</text>
+<g filter="url(#sh)"><rect x="950" y="430" width="220" height="100" rx="10" fill="#b45309"/></g>
+<g transform="translate(964,444)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2,2 H11 L20,11 L11,20 L2,11 Z"/><circle cx="7" cy="7" r="1.6"/></g>
+<text x="964" y="486" font-size="14" font-weight="700" fill="#fff">Release</text>
+<text x="964" y="504" font-size="11" fill="#e2e8f0">release PR, you merge,</text>
+<text x="964" y="519" font-size="11" fill="#e2e8f0">tag vX.Y.Z + GitHub Release</text>
+<path d="M880,480.0 L946,480.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="490" y="582" width="390" height="44" rx="8" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.2"/>
+<text x="504" y="601" font-size="12" font-weight="700" fill="#b91c1c">Deploy failed</text>
+<text x="504" y="617" font-size="11" fill="#7f1d1d">one guarded hotfix through the full loop, else revert, then COE</text>
+<path d="M570.0,530 L570.0,578" fill="none" stroke="#b91c1c" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="30" y="648" width="12" height="12" rx="3" fill="#2563eb"/>
+<text x="48" y="658" font-size="11" fill="#64748b">agent</text>
+<rect x="160" y="648" width="12" height="12" rx="3" fill="#334155"/>
+<text x="178" y="658" font-size="11" fill="#64748b">deterministic</text>
+<rect x="290" y="648" width="12" height="12" rx="3" fill="#b45309"/>
+<text x="308" y="658" font-size="11" fill="#64748b">human</text>
+<rect x="420" y="648" width="12" height="12" rx="3" fill="#0f766e"/>
+<text x="438" y="658" font-size="11" fill="#64748b">outcome</text>
+</svg>

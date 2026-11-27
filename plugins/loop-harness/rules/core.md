@@ -1,6 +1,6 @@
 # Core rules (stack-agnostic)
 
-Tags: **[LINT]** enforced by linter/compiler · **[CI]** enforced by a test or CI job · **[REVIEW]** checked by a reviewer agent · **[PR]** forces a pull request + human notification
+Tags: **[LINT]** enforced by linter/compiler, **[CI]** enforced by a test or CI job, **[REVIEW]** checked by a reviewer agent, **[PR]** forces a pull request + human notification
 
 ## 0. Decision method (trade-offs)
 
