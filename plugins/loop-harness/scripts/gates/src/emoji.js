@@ -7,3 +7,8 @@ export const findEmoji = (text) => {
     .filter((match) => !ALLOWED.has(match[0]))
     .map((match) => ({ index: match.index, char: match[0] }));
 };
+
+const SHORTCODE = /(?<![\w:/]):[a-z0-9_+-]{2,}:(?![\w:/])/g;
+
+export const findShortcodes = (text) =>
+  [...text.matchAll(SHORTCODE)].map((match) => ({ index: match.index, char: match[0] }));

@@ -80,3 +80,8 @@ test('text source flags emoji and passes clean text', () => {
   assert.equal(checkEmoji({ text: `Release ${ROCKET}` }).length, 1);
   assert.deepEqual(checkEmoji({ text: 'Release notes' }), []);
 });
+
+test('text source flags emoji shortcodes but not urls or times', () => {
+  assert.equal(checkEmoji({ text: ':robot: I have created a release' }).length, 1);
+  assert.deepEqual(checkEmoji({ text: 'See https://example.com:443/a and 10:30:00' }), []);
+});

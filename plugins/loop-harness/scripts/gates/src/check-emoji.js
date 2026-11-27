@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { findEmoji } from './emoji.js';
+import { findEmoji, findShortcodes } from './emoji.js';
 import { addedLines, commitMessages } from './git.js';
 import { parseArgs, report } from './args.js';
 
@@ -9,13 +9,18 @@ const describe = (where, text) => findEmoji(text).map(({ char }) => `${where}: e
 
 const fromLines = (lines) => lines.flatMap(({ file, line, text }) => describe(`${file}:${String(line)}`, text));
 
-const fromCommits = (commits) => commits.flatMap(({ sha, message }) => describe(`commit ${sha.slice(0, 7)}`, message));
+const describeText = (where, text) => [
+  ...describe(where, text),
+  ...findShortcodes(text).map(({ char }) => `${where}: emoji shortcode "${char}"`),
+];
+
+const fromCommits = (commits) => commits.flatMap(({ sha, message }) => describeText(`commit ${sha.slice(0, 7)}`, message));
 
 const sources = {
   staged: () => fromLines(addedLines({ staged: true })),
   range: (args) => [...fromLines(addedLines({ range: args.range })), ...fromCommits(commitMessages({ range: args.range }))],
-  'commit-msg': (args) => describe('commit message', readFileSync(args['commit-msg'], 'utf8')),
-  text: (args) => describe('text', args.text),
+  'commit-msg': (args) => describeText('commit message', readFileSync(args['commit-msg'], 'utf8')),
+  text: (args) => describeText('text', args.text),
 };
 
 export const checkEmoji = (args) => Object.keys(sources).filter((key) => args[key]).flatMap((key) => sources[key](args));
