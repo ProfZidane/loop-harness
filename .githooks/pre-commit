@@ -1,0 +1,2 @@
+#!/bin/sh
+node plugins/loop-harness/scripts/gates/src/check-emoji.js --staged

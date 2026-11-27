@@ -1,0 +1,2 @@
+#!/bin/sh
+node plugins/loop-harness/scripts/gates/src/check-commit.js --commit-msg "$1" && node plugins/loop-harness/scripts/gates/src/check-emoji.js --commit-msg "$1"
