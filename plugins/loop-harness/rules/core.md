@@ -17,11 +17,11 @@ No stack is imposed. The stack is chosen per project at kickoff and recorded in 
 | Need | Default candidates |
 |---|---|
 | AI, ML, data, RAG | Python; FastAPI for the API |
-| Fine-grained performance, concurrency, low-level control | Go |
-| Web front | Angular (mastered) unless the need says otherwise |
-| Mobile | ADR comparing Ionic (Angular, mastered) and Flutter |
+| Performance | optimize the chosen stack first (profiling, async, vectorization, caching); only stacks the owner masters are candidates |
+| Web front | Angular; Vue.js when lightness is needed or the dev team does not know Angular |
+| Mobile | ADR comparing Ionic (Angular) and Flutter, backed by a prototype of each run on emulators; the owner tests the APKs and decides |
 | Simple JSON API in a TypeScript project | Node.js + Express |
-| Database | chosen from the data model and access patterns, not by habit |
+| Database | system design decision: PostgreSQL by default (covers most needs); MongoDB, Neo4j, Redis or others when the data model and access patterns call for them |
 
 - Declared stacks live in `.loop/config.yml` → `project.stacks`; each one loads `rules/languages/<language>.md` and `rules/stacks/<stack>.md`. [CI]
 - **No rule pack, no autonomy**: a stack without a rule pack must get one (interview + lint preset) before the loop runs on that project. [CI blocking]
