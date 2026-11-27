@@ -44,9 +44,9 @@ No stack is imposed. The stack is chosen per project at kickoff and recorded in 
 
 - All code in English (identifiers, fields, routes, commits, docs). [REVIEW]
 - UI language is a project setting (`.loop/config.yml` → `ui.language`); multilingual → i18n mandatory, no hardcoded UI text. [REVIEW]
-- One naming convention across database, API and code, so no mapping layer is needed; the language pack picks it (camelCase in TypeScript and Dart, snake_case in Python, Go conventions in Go). [LINT]
+- One naming convention across database, API and code, so no mapping layer is needed; the language pack picks it (camelCase in TypeScript and Dart, snake_case in Python). [LINT]
 - Constants in the language's constant convention; types in PascalCase. [LINT]
-- Static typing at its strictest level available in the language; no escape hatch (`any`, untyped `dict`, `interface{}` without reason). [LINT + CI]
+- Static typing at its strictest level available in the language; no escape hatch (`any`, untyped `dict`, `dynamic`). [LINT + CI]
 
 ## 4. Tests
 
