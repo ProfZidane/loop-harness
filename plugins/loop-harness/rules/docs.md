@@ -2,6 +2,9 @@
 
 All docs in English. Clear, short, schematic. No filler: if a sentence does not carry a fact or a decision, delete it.
 
+- Say what needs saying in as few words as possible. Prefer a table, a list or a diagram over a paragraph.
+- No emoji, no decorative symbols, no marketing tone. Plain text, Markdown structure, SVG diagrams. [CI emoji check]
+
 ## Layout
 
 ```

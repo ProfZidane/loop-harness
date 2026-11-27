@@ -34,6 +34,7 @@ Tags: **[LINT]** enforced by linter/compiler · **[CI]** enforced by a test or C
 
 - **No magic numbers**: every business literal comes from a named constant. [LINT `no-magic-numbers` with ignore [0, 1, -1]]
 - **Self-explanatory code**: names of variables and functions carry the meaning. A comment exists only to explain a specific case (non-obvious constraint, external quirk, trap). No paraphrasing comments, no commented-out code; `TODO` only with an issue number `TODO(#42)`. [REVIEW + LINT `no-warning-comments` without issue ref]
+- **No emoji anywhere**: code, comments, logs, commits, PRs, issues, docs, notifications. [CI emoji check on diff + commitlint]
 - Standard good practices apply by default (early return, no dead code, small pure functions). [REVIEW]
 
 ## 3. Naming & TypeScript

@@ -1,6 +1,6 @@
 # Roadmap
 
-## v0.1 — Rules and templates ✓
+## v0.1 — Rules and templates (done)
 
 - Rules: core, docs, loop, stacks (express, mongo, angular)
 - Templates: loop config, CLAUDE.md, settings, issue and PR templates, docs (architecture, data model, ADR, COE)
