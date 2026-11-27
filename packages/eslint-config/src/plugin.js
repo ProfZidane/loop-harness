@@ -9,14 +9,24 @@ const noEmoji = {
     schema: [],
     messages: { emoji: 'Emoji are forbidden: remove "{{char}}".' },
   },
-  create: (context) => ({
-    Program: () => {
-      const { sourceCode } = context;
-      findEmoji(sourceCode.text).forEach(({ index, char }) =>
-        context.report({ loc: sourceCode.getLocFromIndex(index), messageId: 'emoji', data: { char } }),
-      );
-    },
-  }),
+  create: (context) => {
+    const { sourceCode } = context;
+    const reportEscaped = (node, value) => {
+      const raw = sourceCode.getText(node);
+      if (typeof value === 'string' && findEmoji(raw).length === 0) {
+        findEmoji(value).forEach(({ char }) => context.report({ node, messageId: 'emoji', data: { char } }));
+      }
+    };
+    return {
+      Program: () => {
+        findEmoji(sourceCode.text).forEach(({ index, char }) =>
+          context.report({ loc: sourceCode.getLocFromIndex(index), messageId: 'emoji', data: { char } }),
+        );
+      },
+      Literal: (node) => reportEscaped(node, node.value),
+      TemplateElement: (node) => reportEscaped(node, node.value.cooked),
+    };
+  },
 };
 
 const todoRequiresIssue = {

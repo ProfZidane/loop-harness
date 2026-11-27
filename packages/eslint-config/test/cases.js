@@ -64,6 +64,9 @@ ${longBody}
   { name: 'emoji is forbidden', file: 'src/utils/greeting.ts', expect: ['loop/no-emoji'], code:
 `export const greeting = (): string => 'Done \u{1F680}';
 ` },
+  { name: 'escaped emoji is forbidden', file: 'src/utils/escaped.ts', expect: ['loop/no-emoji'], code:
+`export const escaped = (): string => 'Done \\u{1F680}';
+` },
   { name: 'todo without issue is forbidden', file: 'src/utils/todo.ts', expect: ['loop/todo-requires-issue'], code:
 `// TODO handle refunds
 export const refund = (): boolean => false;
