@@ -25,13 +25,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: packages/gates
+        working-directory: plugins/loop-harness/scripts/gates
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: npm test
+      - run: node --test ../init/loop-init.test.js
 
   plugin:
     runs-on: ubuntu-latest
