@@ -3,7 +3,10 @@
 
 project:
   name: my-project
-  stacks: [express, mongo, angular]   # loads rules/stacks/<name>.md
+  # Chosen per project at kickoff (ADR). Each entry needs a rule pack:
+  # rules/languages/<language>.md and rules/stacks/<stack>.md
+  languages: [typescript]         # e.g. python, go, dart
+  stacks: [express, mongo, angular]   # e.g. fastapi, flutter, ionic, go-http
 
 ui:
   language: fr          # language of user-facing text

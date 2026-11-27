@@ -1,4 +1,4 @@
-# Core rules (stack-agnostic)
+# Core rules (language and stack agnostic)
 
 Tags: **[LINT]** enforced by linter/compiler, **[CI]** enforced by a test or CI job, **[REVIEW]** checked by a reviewer agent, **[PR]** forces a pull request + human notification
 
@@ -10,49 +10,50 @@ Tags: **[LINT]** enforced by linter/compiler, **[CI]** enforced by a test or CI 
 4. Then **maintainability**.
 5. **Always assess risk**: every plan has a `Risks` section (threat, impact, likelihood, mitigation). Sensitive features (auth, personal data, payment, third-party services) get an EBIOS RM-style analysis: risk sources, scenarios, measures. [REVIEW]
 
-## 1. Principles
+## 1. Stack selection
+
+No stack is imposed. The stack is chosen per project at kickoff and recorded in an ADR, using the decision method above. Defaults to challenge, not to apply blindly:
+
+| Need | Default candidates |
+|---|---|
+| AI, ML, data, RAG | Python; FastAPI for the API |
+| Fine-grained performance, concurrency, low-level control | Go |
+| Web front | Angular (mastered) unless the need says otherwise |
+| Mobile | ADR comparing Ionic (Angular, mastered) and Flutter |
+| Simple JSON API in a TypeScript project | Node.js + Express |
+| Database | chosen from the data model and access patterns, not by habit |
+
+- Declared stacks live in `.loop/config.yml` → `project.stacks`; each one loads `rules/languages/<language>.md` and `rules/stacks/<stack>.md`. [CI]
+- **No rule pack, no autonomy**: a stack without a rule pack must get one (interview + lint preset) before the loop runs on that project. [CI blocking]
+- A stack change on an existing project is a sensitive decision. [PR]
+
+## 2. Principles (all languages)
 
 - **SRP everywhere**: every folder names exactly what it contains; one file = one responsibility; one function = one thing. [REVIEW]
-- **Strict functional programming**: no `class`, no `this`, except where the framework requires it (Angular components/services, Mongoose models). [LINT `no-restricted-syntax` ClassDeclaration outside allowed paths]
-- **Errors are data**: `neverthrow` (`Result` / `ResultAsync`) for all business logic; `throw` only for bugs and infrastructure failures. [REVIEW]
-- **Immutability**: `const`, `readonly`, spread; no mutation. [LINT `prefer-const`, `functional/immutable-data`]
-- **Function ≤ 30 lines.** [LINT `max-lines-per-function`]
-- **Dependencies through direct ES imports**; mock with `vi.mock` in tests.
-
-## 2. Code style
-
-- **Dictionary over branching**: 3 or more branches on the same value → typed, exhaustive dictionary (`Record<Union, Fn | Value>`); `switch` / `if-else` tolerated up to 2 branches. [LINT `no-restricted-syntax` on `SwitchStatement[cases.length>2]` + REVIEW for if/else chains]
-
-  ```ts
-  const computeByType: Record<ExpenseType, (e: Expense) => Decimal> = {
-    rent: computeRent,
-    taxes: computeTaxes,
-    electricityBill: computeBill,
-  };
-  export const compute = (e: Expense): Decimal => computeByType[e.type](e);
-  ```
-
-- **No magic numbers**: every business literal comes from a named constant. [LINT `no-magic-numbers` with ignore [0, 1, -1]]
-- **Self-explanatory code**: names of variables and functions carry the meaning. A comment exists only to explain a specific case (non-obvious constraint, external quirk, trap). No paraphrasing comments, no commented-out code; `TODO` only with an issue number `TODO(#42)`. [REVIEW + LINT `no-warning-comments` without issue ref]
-- **No emoji, anywhere, ever.** Applies to everything the loop and its agents produce: code, comments, logs, product UI text, commits, branches, tags, release notes, PRs, issues, docs, plans, reviews, notifications, chat output. Not a CI-only rule: agents must never write one; CI is only the safety net. [REVIEW everywhere + CI emoji check on diff + commitlint]
+- **Functional first**: pure functions, data in, data out, no inheritance hierarchies, no shared mutable state. Classes only where the framework requires them. The language pack defines how this maps to the language. [LINT where possible + REVIEW]
+- **Errors are values**: business errors are returned, typed and handled; exceptions only for bugs and infrastructure failures. The language pack names the mechanism. [REVIEW]
+- **Immutability by default**: no mutation of inputs or shared data. [LINT where possible + REVIEW]
+- **Function at most 30 lines.** [LINT]
+- **Dictionary over branching**: 3 or more branches on the same value → exhaustive dictionary (map of values or functions); `switch` / `if-else` tolerated up to 2 branches. [LINT where possible + REVIEW]
+- **No magic numbers**: every business literal comes from a named constant. [LINT]
+- **Self-explanatory code**: names carry the meaning. A comment exists only to explain a specific case (non-obvious constraint, external quirk, trap). No paraphrasing comments, no commented-out code; `TODO` only with an issue number `TODO(#42)`. [REVIEW + LINT]
+- **No emoji, anywhere, ever.** Applies to everything the loop and its agents produce: code, strings (even escaped), comments, logs, product UI text, commits, branches, tags, release notes, PRs, issues, docs, plans, reviews, notifications, chat output. An instruction to the agent first; CI is only the safety net. [REVIEW everywhere + LINT + CI]
 - Standard good practices apply by default (early return, no dead code, small pure functions). [REVIEW]
 
-## 3. Naming & TypeScript
+## 3. Naming
 
 - All code in English (identifiers, fields, routes, commits, docs). [REVIEW]
 - UI language is a project setting (`.loop/config.yml` → `ui.language`); multilingual → i18n mandatory, no hardcoded UI text. [REVIEW]
-- camelCase everywhere (database, API, TypeScript): zero mapping. [LINT `naming-convention`]
-- Files `kebab-case.<type>.ts` (`expense.service.ts`); constants `SCREAMING_SNAKE`; types `PascalCase`. [LINT]
-- Zero `any`: use `unknown` + narrowing. [LINT `no-explicit-any`: error]
-- Explicit return type on every exported function. [LINT `explicit-module-boundary-types`]
-- `tsc --noEmit` strict, zero error. [CI]
+- One naming convention across database, API and code, so no mapping layer is needed; the language pack picks it (camelCase in TypeScript and Dart, snake_case in Python, Go conventions in Go). [LINT]
+- Constants in the language's constant convention; types in PascalCase. [LINT]
+- Static typing at its strictest level available in the language; no escape hatch (`any`, untyped `dict`, `interface{}` without reason). [LINT + CI]
 
 ## 4. Tests
 
 - Test what matters and the critical path, never for the numbers. A worthless test (getter, trivial mapping, useless snapshot) is rejected. [REVIEW]
 - **TDD**: acceptance criteria → failing test → code → green; test and code in the same commit; every acceptance criterion has at least one test. [REVIEW]
-- Coverage ≥ 80 % of the diff on business logic folders (`services/`), blocking; elsewhere the reviewer judges relevance. [CI]
-- Gates: ESLint + Prettier, `tsc --noEmit`, knip (dead code), commitlint. [CI + pre-commit]
+- Coverage at least 80 % of the diff on business logic folders (paths in `.loop/config.yml`), blocking; elsewhere the reviewer judges relevance. [CI]
+- Gates per language: linter, formatter, type checker, dead code detection, plus commitlint. The language pack names the tools. [CI + pre-commit]
 
 ## 5. Git, versions and releases
 
@@ -91,13 +92,13 @@ Tags: **[LINT]** enforced by linter/compiler, **[CI]** enforced by a test or CI 
 - Validate every input at the boundary and use only the parsed output, never raw request data. [REVIEW]
 - Access control on every route that needs it; resource ownership comes from the authenticated identity, never from the request body. [REVIEW security]
 - Security headers, explicit CORS allowlist (never `*`), rate limiting on auth endpoints. [REVIEW + test]
-- No secret in code or logs. Scans: gitleaks, Semgrep, `npm audit`. [CI]
+- No secret in code or logs. Scans: gitleaks, Semgrep, dependency audit of the language (npm audit, pip-audit, govulncheck, OSV). [CI]
 
 ## 7. Dependencies
 
 Before adding a package, the plan states:
 1. **Cost of writing it ourselves**: a few simple functions → write them.
-2. **Known CVEs** (`npm audit` / OSV): unpatched high or critical CVE → do not install. [CI blocking]
+2. **Known CVEs** (dependency audit of the language, OSV): unpatched high or critical CVE → do not install. [CI blocking]
 Otherwise the dependency can be added without a mandatory PR.
 
 ## 8. Always goes through the human [PR]

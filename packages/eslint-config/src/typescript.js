@@ -8,7 +8,7 @@ const MAX_SWITCH_CASES = 2;
 
 export const noClassSelector = {
   selector: 'ClassDeclaration, ClassExpression',
-  message: 'No classes: use functions and plain objects (rules/core.md, section 1).',
+  message: 'No classes: use functions and plain objects (rules/core.md, section 2).',
 };
 
 export const noBigSwitchSelector = {

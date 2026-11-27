@@ -1,6 +1,6 @@
 # loop-harness
 
-Guarded autonomous development loop for Claude Code. Install it once, use it on any project: it takes tickets, plans, builds with TDD, runs deterministic gates, reviews code, spec and security, merges low-risk work and sends sensitive work to you.
+Guarded autonomous development loop for Claude Code. Install it once, use it on any project and any stack: it takes tickets, plans, builds with TDD, runs deterministic gates, reviews code, spec and security, merges low-risk work and sends sensitive work to you.
 
 ![Pipeline](./docs/assets/pipeline.svg)
 
@@ -11,6 +11,7 @@ Guarded autonomous development loop for Claude Code. Install it once, use it on 
 | Deterministic control | Agents decide inside a step. Transitions, limits and risk are code. |
 | Risk only goes up | The loop can mark a ticket sensitive, never the opposite. |
 | Human on what matters | Sensitive zones, core business, third parties, real trade-offs, releases. |
+| No imposed stack | Chosen per project in an ADR; a stack without a rule pack gets one before the loop runs. |
 | Rules as source of truth | Every agent reads `rules/`. Every rule names its enforcement: lint, CI, review or PR. |
 
 ## Layout
@@ -20,10 +21,11 @@ Guarded autonomous development loop for Claude Code. Install it once, use it on 
 plugins/loop-harness/
   .claude-plugin/plugin.json
   rules/
-    core.md          stack-agnostic rules and decision method
+    core.md          language-agnostic rules, decision method, stack selection
     docs.md          documentation conventions
     loop.md          loop behaviour and limits
-    stacks/          express.md, mongo.md, angular.md
+    languages/       one pack per language: typescript.md
+    stacks/          one pack per stack: express.md, mongo.md, angular.md
   templates/         copied into a project by loop-init
     loop.config.yml  becomes .loop/config.yml
     claude/          CLAUDE.md, .claude/settings.json

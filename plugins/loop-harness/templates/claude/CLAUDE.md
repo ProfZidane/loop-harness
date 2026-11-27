@@ -12,9 +12,10 @@ This project runs under loop-harness. Rules are loaded from the plugin; this fil
 @.loop/rules/docs.md
 @.loop/rules/loop.md
 
-## Stack rules
+## Language and stack rules
 
-<!-- /loop-init adds one import per stack declared in .loop/config.yml -->
+<!-- loop-init writes one import per language and stack declared in .loop/config.yml -->
+@.loop/rules/languages/typescript.md
 @.loop/rules/stacks/express.md
 @.loop/rules/stacks/mongo.md
 @.loop/rules/stacks/angular.md
