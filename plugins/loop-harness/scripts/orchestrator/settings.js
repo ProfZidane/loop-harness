@@ -48,6 +48,10 @@ export const readSettings = (text) => ({
       passwordEnv: getValue(text, 'notify.email.smtpPasswordEnv') || 'LOOP_SMTP_APP_PASSWORD',
     },
   },
+  quota: {
+    five_hour: num(text, 'loop.quota.fiveHourStopAt', 90),
+    seven_day: num(text, 'loop.quota.weeklyStopAt', 90),
+  },
   pollMinutes: num(text, 'tickets.pollMinutes', 5),
   window: getValue(text, 'loop.modes.window') || null,
 });

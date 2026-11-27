@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+
 // Git adapter: one worktree and one branch per ticket. exec(cmd, args, { cwd }) -> stdout.
 
 const slug = (title) =>
@@ -15,6 +17,7 @@ export const git = (exec, repoDir) => {
 
   return {
     createWorktree: ({ path, branch }) => {
+      if (existsSync(path)) return path;
       run(['fetch', 'origin', 'main']);
       run(['worktree', 'add', '-B', branch, path, 'origin/main']);
       return path;

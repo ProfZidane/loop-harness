@@ -67,12 +67,12 @@ test('agent args use the plugin agent, schema, unattended permissions and budget
 
 test('agent output: structured output, fenced fallback, errors', async () => {
   const structured = parseAgentOutput(JSON.stringify({ structured_output: { verdict: 'approve', findings: [] }, total_cost_usd: 0.4 }));
-  assert.deepEqual(structured, { ok: true, output: { verdict: 'approve', findings: [] }, cost: 0.4 });
+  assert.deepEqual(structured, { ok: true, output: { verdict: 'approve', findings: [] }, cost: 0.4, usage: [], limited: false });
   const fenced = parseAgentOutput(JSON.stringify({ result: 'Done.\n```json\n{"status":"done"}\n```' }));
   assert.deepEqual(fenced.output, { status: 'done' });
   assert.equal(parseAgentOutput(JSON.stringify({ is_error: true, result: 'Budget limit reached' })).ok, false);
   const crashed = await runAgent(async () => { throw Object.assign(new Error('boom'), { stderr: 'not logged in' }); })({ agent: 'planner', prompt: '', cwd: '.', settings: { permissionMode: 'auto', budgetUsd: 1 } });
-  assert.deepEqual(crashed, { ok: false, error: 'not logged in', cost: 0 });
+  assert.deepEqual(crashed, { ok: false, error: 'not logged in', cost: 0, usage: [], limited: false });
 });
 
 test('blocking findings are blockers and majors', () => {

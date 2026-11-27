@@ -12,12 +12,13 @@ Orchestrator: `node "${CLAUDE_PLUGIN_ROOT}/scripts/loop.mjs" <command> <projectD
 | `doctor` | Checks claude CLI, gh login, git remote, rule packs. Every run starts with it and stops if it fails. |
 | `run` | One pass: plans up to `loop.maxParallel` ready tickets, builds the ones that do not share files, reviews, ships. |
 | `status` | Issue numbers per `loop:*` label. |
+| `usage` | Last known Claude quota (five-hour and weekly windows) and whether the loop is paused. `--probe` refreshes it with one tiny call. |
 | `daemon` | `run` every `tickets.pollMinutes`, inside `loop.modes.window` if set. Long-running: start it from a terminal, not from this session. |
 
 ## How to answer the user
 
 - `doctor` or `status`: run it and report as a short table. No emoji.
-- `run`: warn that it starts paid agent sessions (budget: `loop.budgetUsdPerTicket` per ticket), then run it and report each ticket outcome with its issue link.
+- `run`: it consumes the owner's Claude subscription quota. Run `usage` first and report it; the loop pauses by itself at `loop.quota` thresholds (90 % by default). Then run it and report each ticket outcome with its issue link.
 - `daemon`: do not start it here. Give the user this command for their terminal:
   `node "${CLAUDE_PLUGIN_ROOT}/scripts/loop.mjs" daemon .`
   and suggest an alias, for example `alias loop='node "${CLAUDE_PLUGIN_ROOT}/scripts/loop.mjs"'`.

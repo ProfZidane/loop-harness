@@ -20,6 +20,7 @@ const depsFor = (issue, deps) =>
 const planAll = (issues, deps) =>
   issues.reduce(async (previous, issue) => {
     const state = await previous;
+    if (deps.quota.check().pause) return state;
     const ticketDeps = depsFor(issue, deps);
     const result = await advance({ issue, run: deps.store.runFor(issue), cost: 0 }, ticketDeps, 'plan', 'build');
     return result.paused
@@ -34,6 +35,8 @@ const defer = (ticket, deps) => {
 };
 
 export const runOnce = async (deps) => {
+  const quota = deps.quota.check();
+  if (quota.pause) return { skipped: 'quota', ...quota };
   const recovered = recoverInterrupted(deps);
   const issues = deps.gh.listReady().slice(0, deps.settings.maxParallel);
   const { planned, finished } = await planAll(issues, deps);

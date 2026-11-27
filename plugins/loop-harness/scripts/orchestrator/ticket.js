@@ -34,6 +34,12 @@ const hotfixBody = (ctx, deps) => [
 ].join('\n');
 
 export const OUTCOMES = {
+  paused: async (ctx, deps) => {
+    const until = ctx.pause.until ? ` Resumes after ${ctx.pause.until}.` : '';
+    deps.gh.comment(ctx.issue.number, `Paused by the quota guard: ${ctx.pause.reason}.${until} The ticket goes back to the queue.`);
+    deps.gh.setStatus(ctx.issue.number, ctx.planApproved ? 'loop:plan-approved' : 'loop:ready');
+    await deps.notify('quota', { title: 'Loop paused: Claude quota', message: `${ctx.pause.reason}.${until}` });
+  },
   blocked: async (ctx, deps) => {
     deps.gh.comment(ctx.issue.number, `Blocked: ${ctx.reason}\n${findingsList(ctx)}\n\nRelabel loop:ready to retry.`);
     deps.gh.setStatus(ctx.issue.number, 'loop:blocked');
@@ -80,6 +86,6 @@ const cleanup = (ctx, deps) => {
 export const finish = async (result, deps) => {
   deps.log(result.ctx, 'outcome', { outcome: result.stop, reason: result.ctx.reason });
   await OUTCOMES[result.stop](result.ctx, deps);
-  if (result.ctx.worktree) cleanup(result.ctx, deps);
+  if (result.ctx.worktree && result.stop !== 'paused') cleanup(result.ctx, deps);
   return { number: result.ctx.issue.number, outcome: result.stop, cost: result.ctx.cost };
 };

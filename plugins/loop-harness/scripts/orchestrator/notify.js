@@ -42,4 +42,5 @@ export const ROUTES = {
   'plan-awaiting': { push: 'high', email: true },
   'review-requested': { push: 'normal', email: true },
   merged: { push: null, email: true },
+  quota: { push: 'high', email: true },
 };

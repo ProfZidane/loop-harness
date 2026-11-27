@@ -57,6 +57,7 @@ const setup = ({ issues, script, changed = ['src/services/a.service.ts'], config
     notify: async (event, payload) => { calls.notify.push(event); return payload; },
     checkDeploy: async () => (deployOk ? { ok: true, failures: [] } : { ok: false, failures: [{ name: 'railway', output: 'crash' }] }),
   };
+  deps.quota = { check: () => ({ pause: false }), record: () => ({ pause: false }) };
   deps.log = deps.store.log;
   deps.revert = async (ctx) => { calls.notify.push('revert'); return ctx; };
   return { deps, calls };
@@ -196,6 +197,36 @@ test('a failing worktree cleanup does not fail the run', async () => {
   assert.equal((await runOnce(deps)).results[0].outcome, 'awaiting-review');
 });
 
+test('quota at the limit before a run: nothing starts', async () => {
+  const { deps, calls } = setup({ issues: [issue(1)], script: { 1: happy() } });
+  deps.quota.check = () => ({ pause: true, until: '2026-11-27T16:40:00.000Z', reason: 'five_hour at 91%' });
+  const result = await runOnce(deps);
+  assert.equal(result.skipped, 'quota');
+  assert.deepEqual(calls.agents, []);
+  assert.deepEqual(calls.gh, []);
+});
+
+test('quota reached during a ticket: paused and requeued, never blocked', async () => {
+  const { deps, calls } = setup({ issues: [issue(1)], script: { 1: happy() } });
+  const pauseAfterReviewer = { count: 0 };
+  deps.quota.check = () => ({ pause: pauseAfterReviewer.count >= 2, until: '2026-11-27T16:40:00.000Z', reason: 'seven_day at 90%' });
+  deps.quota.record = () => { pauseAfterReviewer.count += 1; return { pause: false }; };
+  const { results } = await runOnce(deps);
+  assert.equal(results[0].outcome, 'paused');
+  assert.deepEqual(statuses(calls, 1).at(-1), 'loop:plan-approved');
+  assert.ok(calls.gh.some(([kind, , body]) => kind === 'comment' && body.includes('seven_day at 90%')));
+  assert.ok(!calls.git.some(([kind]) => kind === 'removeWorktree'), 'worktree kept for resume');
+  assert.deepEqual(calls.notify, ['quota']);
+});
+
+test('usage limit hit inside an agent run pauses the ticket', async () => {
+  const { deps, calls } = setup({ issues: [issue(1)], script: {} });
+  deps.runAgent = async () => ({ ok: false, error: 'Claude usage limit reached', cost: 0, usage: [], limited: true });
+  const { results } = await runOnce(deps);
+  assert.equal(results[0].outcome, 'paused');
+  assert.deepEqual(statuses(calls, 1).at(-1), 'loop:ready');
+});
+
 test('settings and time window', () => {
   const settings = readSettings(template);
   assert.equal(settings.maxParallel, 3);
@@ -203,6 +234,7 @@ test('settings and time window', () => {
   assert.equal(settings.agent.permissionMode, 'auto');
   assert.deepEqual(settings.deploy.checks, []);
   assert.equal(settings.deploy.attempts, 30);
+  assert.deepEqual(settings.quota, { five_hour: 90, seven_day: 90 });
   assert.ok(inWindow('22:00-07:00', new Date('2026-11-27T23:30:00')));
   assert.ok(!inWindow('22:00-07:00', new Date('2026-11-27T12:00:00')));
   assert.ok(inWindow(null, new Date()));

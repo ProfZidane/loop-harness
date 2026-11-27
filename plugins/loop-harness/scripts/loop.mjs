@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// loop-harness orchestrator. Usage: node loop.mjs <run|daemon|status|doctor> [projectDir]
+// loop-harness orchestrator. Usage: node loop.mjs <run|daemon|status|doctor|usage> [projectDir]
 import { execFile, execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
@@ -15,6 +15,7 @@ import { ntfy, email, ROUTES } from './orchestrator/notify.js';
 import { checkDeploy } from './orchestrator/deploy.js';
 import { revert } from './orchestrator/revert.js';
 import { runOnce } from './orchestrator/queue.js';
+import { quotaGuard, usageStore, snapshotsFromStream } from './orchestrator/usage.js';
 import { missingPacks, readDeclaredStack } from './init/packs.js';
 
 const MAX_BUFFER = 64 * 1024 * 1024;
@@ -38,9 +39,11 @@ const notifier = (settings) => async (event, { title, message, url }) => {
 
 export const wire = (repoDir) => {
   const settings = readSettings(readFileSync(join(repoDir, '.loop', 'config.yml'), 'utf8'));
-  const runStore = store({ home: join(homedir(), '.loop-harness'), repoName: basename(repoDir), now: () => new Date() });
+  const home = join(homedir(), '.loop-harness');
+  const runStore = store({ home, repoName: basename(repoDir), now: () => new Date() });
+  const quota = quotaGuard({ store: usageStore(join(home, 'usage.json')), stopAt: settings.quota, now: () => new Date() });
   const deps = {
-    repoDir, settings, store: runStore, log: runStore.log,
+    repoDir, settings, store: runStore, log: runStore.log, quota,
     runAgent: runAgent(execAsync), gh: github(exec, repoDir), git: git(exec, repoDir), notify: notifier(settings),
     checkDeploy: () => checkDeploy({ exec, cwd: repoDir, targets: settings.deploy.checks, attempts: settings.deploy.attempts, sleep: () => sleep(settings.deploy.pollMs) }),
   };
@@ -80,14 +83,32 @@ const once = async (deps) => {
   }
 };
 
+const MINUTE_MS = 60000;
+
+// Waits for the next poll, or until the quota window resets when the loop is paused.
+const nextDelay = (deps) => {
+  const poll = deps.settings.pollMinutes * MINUTE_MS;
+  const quota = deps.quota.check();
+  if (!quota.pause || !quota.until) return poll;
+  return Math.max(poll, new Date(quota.until).getTime() - Date.now() + MINUTE_MS);
+};
+
 const daemon = async (deps) => {
   const tick = async () => {
     const result = inWindow(deps.settings.window, new Date()) ? await once(deps) : { skipped: 'outside time window' };
     console.log(JSON.stringify({ at: new Date().toISOString(), ...result }));
-    await sleep(deps.settings.pollMinutes * 60000);
+    await sleep(nextDelay(deps));
     return tick();
   };
   return tick();
+};
+
+// Shows the last known quota. With --probe, runs one tiny headless call to refresh it and prints the raw events.
+const usage = async (deps, argv) => {
+  if (!argv.includes('--probe')) return { stopAt: deps.settings.quota, ...deps.quota.check(), usage: deps.quota.record([]) };
+  const stdout = await execAsync('claude', ['-p', '--output-format', 'stream-json', '--verbose', '--max-turns', '1', 'Reply with: ok'], { cwd: deps.repoDir });
+  const events = stdout.split('\n').filter(Boolean).map((line) => JSON.parse(line)).filter((e) => e.type === 'rate_limit_event');
+  return { rawEvents: events, decision: deps.quota.record(snapshotsFromStream(events)) };
 };
 
 const status = (deps) => Object.fromEntries(
@@ -95,14 +116,14 @@ const status = (deps) => Object.fromEntries(
     .map((label) => [label, deps.gh.listByLabel(label)]),
 );
 
-const COMMANDS = { run: once, daemon, status: async (deps) => status(deps), doctor: async (deps) => doctor(deps.repoDir) };
+const COMMANDS = { run: once, daemon, usage, status: async (deps) => status(deps), doctor: async (deps) => doctor(deps.repoDir) };
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const [command, dir = '.'] = process.argv.slice(2);
+  const [command, dir = '.', ...rest] = process.argv.slice(2);
   if (!COMMANDS[command]) {
-    console.error('Usage: loop.mjs <run|daemon|status|doctor> [projectDir]');
+    console.error('Usage: loop.mjs <run|daemon|status|doctor|usage> [projectDir] [--probe]');
     process.exit(2);
   }
-  const result = await COMMANDS[command](wire(resolve(dir)));
+  const result = await COMMANDS[command](wire(resolve(dir)), rest);
   console.log(JSON.stringify(result, null, 2));
 }

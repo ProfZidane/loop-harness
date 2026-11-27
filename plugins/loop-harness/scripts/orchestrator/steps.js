@@ -9,25 +9,33 @@ import { branchFor } from './git.js';
 const REVIEWERS = ['code-reviewer', 'spec-reviewer', 'security-reviewer'];
 
 const call = async (deps, ctx, agent, prompt, cwd) => {
+  const before = deps.quota.check();
+  if (before.pause) return { result: { ok: false, paused: before }, cost: ctx.cost };
   const result = await deps.runAgent({ agent, prompt, cwd, settings: deps.settings.agent });
+  const after = deps.quota.record(result.usage ?? []);
   const cost = ctx.cost + result.cost;
-  deps.log(ctx, agent, { ok: result.ok, cost: result.cost, output: result.output, error: result.error });
+  deps.log(ctx, agent, { ok: result.ok, cost: result.cost, output: result.output, error: result.error, quota: after });
+  if (result.limited) return { result: { ok: false, paused: { ...after, pause: true, reason: after.reason ?? 'usage limit reached' } }, cost };
   if (cost > deps.settings.budgetUsdPerTicket) return { result: { ok: false, error: `ticket budget exceeded (${cost.toFixed(2)} USD)` }, cost };
   return { result, cost };
 };
 
 export const blocked = (ctx, reason) => ({ stop: 'blocked', ctx: { ...ctx, reason } });
 
+// An agent call that did not succeed: paused by the quota guard, or blocked.
+const failed = (ctx, result, label) =>
+  result.paused ? { stop: 'paused', ctx: { ...ctx, pause: result.paused } } : blocked(ctx, `${label}: ${result.error}`);
+
 export const plan = async (ctx, deps) => {
   if (ctx.issue.labels.includes('loop:plan-approved') && deps.store.hasPlan(ctx)) {
     const saved = deps.store.readPlan(ctx);
     const { reasons } = planGate({ plan: saved, issue: ctx.issue, config: deps.settings.risk });
-    return { next: 'build', ctx: { ...ctx, plan: saved, planReasons: reasons } };
+    return { next: 'build', ctx: { ...ctx, plan: saved, planReasons: reasons, planApproved: true } };
   }
   deps.gh.setStatus(ctx.issue.number, 'loop:planning');
   const { result, cost } = await call(deps, ctx, 'planner', PROMPTS.planner(ctx), deps.repoDir);
   const next = { ...ctx, cost };
-  if (!result.ok) return blocked(next, `planner failed: ${result.error}`);
+  if (!result.ok) return failed(next, result, 'planner failed');
   if (result.output.questions.length > 0) return { stop: 'question', ctx: { ...next, questions: result.output.questions } };
   deps.store.savePlan(next, result.output);
   return { next: 'planGate', ctx: { ...next, plan: result.output } };
@@ -38,9 +46,9 @@ export const gatePlan = async (ctx, deps) => {
   if (gate.human) return { stop: 'awaiting-plan', ctx: { ...ctx, planReasons: gate.reasons } };
   const { result, cost } = await call(deps, ctx, 'plan-reviewer', PROMPTS['plan-reviewer'](ctx), deps.repoDir);
   const next = { ...ctx, cost };
-  if (!result.ok) return blocked(next, `plan reviewer failed: ${result.error}`);
+  if (!result.ok) return failed(next, result, 'plan reviewer failed');
   const verdicts = {
-    approve: () => ({ next: 'build', ctx: { ...next, adr: result.output.adr } }),
+    approve: () => ({ next: 'build', ctx: { ...next, adr: result.output.adr, planApproved: true } }),
     escalate: () => ({ stop: 'awaiting-plan', ctx: { ...next, planReasons: ['plan reviewer escalated'] } }),
     changes: () => (next.planRounds ?? 0) + 1 >= deps.settings.maxReviewIterations
       ? blocked(next, `plan rejected ${deps.settings.maxReviewIterations} times`)
@@ -55,7 +63,7 @@ export const build = async (ctx, deps) => {
   deps.gh.setStatus(ctx.issue.number, 'loop:in-progress');
   const { result, cost } = await call(deps, ctx, 'builder', PROMPTS.builder({ ...ctx, branch }), worktree);
   const next = { ...ctx, cost, branch, worktree };
-  if (!result.ok) return blocked(next, `builder failed: ${result.error}`);
+  if (!result.ok) return failed(next, result, 'builder failed');
   return result.output.status === 'blocked' ? blocked(next, `builder blocked: ${result.output.blocker}`) : { next: 'review', ctx: next };
 };
 
@@ -69,14 +77,14 @@ const runReviewers = (ctx, deps) =>
 export const review = async (ctx, deps) => {
   const { cost, reviews } = await runReviewers(ctx, deps);
   const next = { ...ctx, cost, reviews };
-  const failed = reviews.find((r) => !r.ok);
-  if (failed) return blocked(next, `${failed.agent} failed: ${failed.error}`);
+  const broken = reviews.find((r) => !r.ok);
+  if (broken) return failed(next, broken, `${broken.agent} failed`);
   const findings = reviews.flatMap((r) => blocking(r.output));
   if (findings.length === 0) return { next: 'ship', ctx: next };
   const rounds = (ctx.reviewRounds ?? 0) + 1;
   if (rounds >= deps.settings.maxReviewIterations) return blocked({ ...next, findings }, `review not clean after ${rounds} rounds`);
   const fix = await call(deps, next, 'builder', PROMPTS.builder({ ...next, findings }), ctx.worktree);
-  if (!fix.result.ok) return blocked({ ...next, cost: fix.cost }, `builder fix failed: ${fix.result.error}`);
+  if (!fix.result.ok) return failed({ ...next, cost: fix.cost }, fix.result, 'builder fix failed');
   return { next: 'review', ctx: { ...next, cost: fix.cost, reviewRounds: rounds } };
 };
 

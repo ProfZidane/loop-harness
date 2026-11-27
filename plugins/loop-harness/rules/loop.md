@@ -39,6 +39,14 @@ Every agent ends its final message with exactly one fenced `json` block. The orc
 
 `scripts/loop.mjs`, commands `doctor`, `run`, `status`, `daemon` (skill `loop`). Every run starts with `doctor` and stops if the claude CLI, the gh login, the git remote or a rule pack is missing. One orchestrator per repository (lock file). Tickets interrupted by a crash are marked `loop:blocked` at the next start. Run state and logs live outside the repository in `~/.loop-harness/`.
 
+## Quota guard (Claude Pro/Max subscription)
+
+- The loop runs on the owner's subscription, not on the API. The quota is the hard limit, the dollar budget is only an estimate.
+- Every agent run reads the `rate_limit_event` messages of Claude Code and stores the five-hour and weekly usage in `~/.loop-harness/usage.json`.
+- Before every agent call: if a window is at or above `loop.quota.fiveHourStopAt` or `loop.quota.weeklyStopAt` (default 90 %), nothing starts.
+- A ticket stopped by the quota is never blocked: it goes back to the queue (`loop:ready`, or `loop:plan-approved` if its plan was approved), its worktree is kept, the owner gets one notification, and the daemon waits for the window reset.
+- `loop usage` shows the last known quota; `loop usage --probe` runs one tiny call to refresh it.
+
 ## Ticket source
 
 - Default adapter: **GitHub Issues**. Status through labels: `loop:ready` → `loop:planning` → `loop:awaiting-plan` → `loop:plan-approved` → `loop:in-progress` → `loop:awaiting-review` → `loop:done` | `loop:blocked` | `loop:question`.
