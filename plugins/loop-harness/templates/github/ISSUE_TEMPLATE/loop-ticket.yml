@@ -1,0 +1,34 @@
+name: Loop ticket
+description: A feature or fix for the autonomous loop
+title: "feat: "
+labels: ["loop:ready"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why this is needed and who it serves.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: One verifiable behaviour per line. Each one becomes at least one test.
+      placeholder: |
+        - A nomad seller cannot have two active missions
+        - Returned items are added back to the market stock
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: What the loop must not do in this ticket.
+  - type: checkboxes
+    id: flags
+    attributes:
+      label: Flags
+      options:
+        - label: Core business (forces plan validation)
+        - label: Involves a third-party service

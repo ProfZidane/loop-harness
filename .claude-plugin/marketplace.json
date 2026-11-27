@@ -1,0 +1,14 @@
+{
+  "name": "loop-harness",
+  "description": "Deterministic plan-build-review-ship loop for Claude Code",
+  "owner": {
+    "name": "loop-harness maintainers"
+  },
+  "plugins": [
+    {
+      "name": "loop-harness",
+      "source": "./plugins/loop-harness",
+      "description": "Agents, skills, hooks and rules that drive a guarded autonomous dev loop on any project"
+    }
+  ]
+}
