@@ -56,6 +56,12 @@ tickets:
 loop:
   maxParallel: 3
   maxReviewIterations: 3
+  autoMerge: false          # phase 1: every ticket ends in a PR you merge; true = phase 2, low-risk tickets merge alone
+  permissionMode: auto      # auto (classifier) | bypassPermissions (only inside a container)
+  model: ""                 # empty = Claude Code default
+  budgetUsdPerAgent: 5
+  budgetUsdPerTicket: 15
+  agentTimeoutMinutes: 45
   modes:
     manual: true
     daemon: false
@@ -71,11 +77,11 @@ release:
     minSupportedVersion: null   # oldest app version the API must keep serving
 
 deploy:
-  targets:
-    - provider: vercel
-      project: my-front
-    - provider: railway
-      service: my-api
+  waitMinutes: 15
+  pollSeconds: 30
+  checks:                 # one command per target: exit 0 = healthy, exit 75 = still deploying, other = failed
+    vercel: ""
+    railway: ""
   hotfix:
     attempts: 1
     timeoutMinutes: 30
@@ -83,8 +89,10 @@ deploy:
 notify:
   githubReviewer: your-github-login
   ntfy:
+    server: https://ntfy.sh
     topic: change-me-to-a-random-topic
   email:
+    smtpUrl: smtps://smtp.gmail.com:465
     to: you@example.com
     smtpUserEnv: LOOP_SMTP_USER       # values read from env, never stored here
     smtpPasswordEnv: LOOP_SMTP_APP_PASSWORD

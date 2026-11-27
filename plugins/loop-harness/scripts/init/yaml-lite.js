@@ -64,3 +64,13 @@ export const setValue = (text, path, value) => {
   const updated = `${indent}${key}: ${formatValue(value)}${comment ? `   ${comment}` : ''}`;
   return [...lines.slice(0, entry.index), updated, ...lines.slice(entry.index + 1)].join('\n');
 };
+
+// Children of a map whose values are scalars, e.g. deploy.checks -> { vercel: "cmd", railway: "cmd" }.
+export const getMap = (text, path) => {
+  const depth = path.split('.').length + 1;
+  return Object.fromEntries(
+    indexKeys(text.split('\n'))
+      .filter((key) => key.path.startsWith(`${path}.`) && key.path.split('.').length === depth)
+      .map((key) => [key.path.split('.').pop(), parseValue(key.match[4])]),
+  );
+};

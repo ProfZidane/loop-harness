@@ -28,6 +28,8 @@ plugins/loop-harness/
     stacks/          one pack per stack: express.md, mongo.md, angular.md
   scripts/
     gates/           dependency-free checks: emoji, commit messages, branch names
+    loop.mjs         orchestrator: doctor, run, status, daemon
+    orchestrator/    pipeline steps, risk gates, scheduling, GitHub, git, notify, deploy adapters
     hooks/guard.mjs  PreToolUse guard: protected paths, no emoji, gates before commit
     docs/diagram.mjs renders C4 diagrams from a JSON spec in the house style
     loop-init.mjs    deterministic project setup used by the loop-init skill
@@ -37,6 +39,7 @@ plugins/loop-harness/
     eslint/          ESLint presets for the [LINT] rules, copied into projects by loop-init
   skills/
     loop-init/       sets up a project for the loop
+    loop/            runs, watches and diagnoses the loop
     docs-writer/     C4 diagrams, data model, ADR, COE
   templates/         copied into a project by loop-init
     loop.config.yml  becomes .loop/config.yml
@@ -59,9 +62,15 @@ claude plugin marketplace add ProfZidane/loop-harness
 claude plugin install loop-harness@loop-harness
 ```
 
-## Status
+## Use
 
-Rules and templates are available. Gates, agents and orchestrator are tracked in [issues](https://github.com/ProfZidane/loop-harness/issues), grouped by version label.
+1. In a project: `/loop-harness:loop-init`, then merge the setup pull request.
+2. Write tickets with the issue template; label them `loop:ready`.
+3. `/loop-harness:loop` to run a pass, or start the daemon from a terminal.
+
+Phase 1 (default, `loop.autoMerge: false`): every ticket ends in a pull request you merge. Phase 2: low-risk tickets merge alone.
+
+Remaining work is tracked in [issues](https://github.com/ProfZidane/loop-harness/issues), grouped by version label.
 
 ## License
 

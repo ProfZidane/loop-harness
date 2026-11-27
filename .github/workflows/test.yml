@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: 22
       - run: npm test
-      - run: node --test ../init/loop-init.test.js ../hooks/guard.test.js ../agents.test.js ../docs/diagram.test.js
+      - run: node --test ../init/loop-init.test.js ../hooks/guard.test.js ../agents.test.js ../docs/diagram.test.js ../orchestrator/core.test.js ../orchestrator/pipeline.test.js
 
   plugin:
     runs-on: ubuntu-latest

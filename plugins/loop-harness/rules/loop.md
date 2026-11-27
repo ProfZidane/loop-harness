@@ -35,9 +35,14 @@ Every agent ends its final message with exactly one fenced `json` block. The orc
 - A planner with `questions` stops the ticket: questions go to the issue, label `loop:question`.
 - Agents never write an emoji, in prose or in JSON.
 
+## Orchestrator
+
+`scripts/loop.mjs`, commands `doctor`, `run`, `status`, `daemon` (skill `loop`). Every run starts with `doctor` and stops if the claude CLI, the gh login, the git remote or a rule pack is missing. One orchestrator per repository (lock file). Tickets interrupted by a crash are marked `loop:blocked` at the next start. Run state and logs live outside the repository in `~/.loop-harness/`.
+
 ## Ticket source
 
-- Default adapter: **GitHub Issues**. Status through labels: `loop:ready` → `loop:planning` → `loop:awaiting-plan` → `loop:in-progress` → `loop:awaiting-review` → `loop:done` | `loop:blocked` | `loop:question`.
+- Default adapter: **GitHub Issues**. Status through labels: `loop:ready` → `loop:planning` → `loop:awaiting-plan` → `loop:plan-approved` → `loop:in-progress` → `loop:awaiting-review` → `loop:done` | `loop:blocked` | `loop:question`.
+- The owner approves a plan posted on the issue by adding `loop:plan-approved`; the loop then builds it without replanning. A ticket deferred because it shares files with an active ticket also gets `loop:plan-approved`.
 - Ticket template: context, acceptance criteria, out of scope.
 
 ## Triggers
