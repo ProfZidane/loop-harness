@@ -30,6 +30,7 @@ plugins/loop-harness/
     gates/           dependency-free checks: emoji, commit messages, branch names
     hooks/guard.mjs  PreToolUse guard: protected paths, no emoji, gates before commit
     loop-init.mjs    deterministic project setup used by the loop-init skill
+  agents/            planner, plan-reviewer, builder, code-reviewer, spec-reviewer, security-reviewer
   hooks/hooks.json   registers the guard
   presets/
     eslint/          ESLint presets for the [LINT] rules, copied into projects by loop-init
@@ -37,6 +38,7 @@ plugins/loop-harness/
     loop-init/       sets up a project for the loop
   templates/         copied into a project by loop-init
     loop.config.yml  becomes .loop/config.yml
+    loop/plan.md     plan structure used by the planner
     claude/          CLAUDE.md, .claude/settings.json
     github/          issue, pull request and workflow templates (gates, release, mobile build)
     release/         release-please config and manifest

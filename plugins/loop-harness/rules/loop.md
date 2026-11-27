@@ -18,6 +18,23 @@ The orchestrator owns the state machine. Agents work freely inside a step; trans
 | 10. Done | orchestrator | issue `loop:done`, docs updated |
 | 11. Release | release-please + human | release PR merged by the human, tag and GitHub Release |
 
+## Agent outputs
+
+Every agent ends its final message with exactly one fenced `json` block. The orchestrator reads only that block; prose before it is for humans.
+
+| Agent | Block |
+|---|---|
+| planner | `{ "plan": "<path>", "files": ["<path>"], "mockup": "<path>" or null, "triggers": { "sensitive": bool, "coreBusiness": bool, "thirdParty": bool, "tradeOff": bool }, "questions": ["<question>"] }` |
+| plan-reviewer | `{ "verdict": "approve" or "changes" or "escalate", "findings": [Finding], "adr": "<markdown>" or null }` |
+| builder | `{ "status": "done" or "blocked", "commits": ["<sha>"], "docs": ["<path>"], "blocker": "<reason>" or null }` |
+| code-reviewer, spec-reviewer, security-reviewer | `{ "verdict": "approve" or "changes", "findings": [Finding] }` |
+
+`Finding` = `{ "severity": "blocker" or "major" or "minor", "file": "<path>", "line": number or null, "rule": "<rules file and section>", "message": "<what and how to fix>" }`
+
+- Any `blocker` or `major` finding means `changes`. `minor` findings are reported, never block.
+- A planner with `questions` stops the ticket: questions go to the issue, label `loop:question`.
+- Agents never write an emoji, in prose or in JSON.
+
 ## Ticket source
 
 - Default adapter: **GitHub Issues**. Status through labels: `loop:ready` → `loop:planning` → `loop:awaiting-plan` → `loop:in-progress` → `loop:awaiting-review` → `loop:done` | `loop:blocked` | `loop:question`.
