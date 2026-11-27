@@ -1,4 +1,4 @@
-import { express } from '../../packages/eslint-config/src/index.js';
+import { express } from '../../plugins/loop-harness/presets/eslint/src/index.js';
 
 export default [
   { ignores: ['coverage/**', 'eslint.config.js', 'vitest.config.ts'] },

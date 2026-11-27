@@ -29,6 +29,8 @@ plugins/loop-harness/
   scripts/
     gates/           dependency-free checks: emoji, commit messages, branch names
     loop-init.mjs    deterministic project setup used by the loop-init skill
+  presets/
+    eslint/          ESLint presets for the [LINT] rules, copied into projects by loop-init
   skills/
     loop-init/       sets up a project for the loop
   templates/         copied into a project by loop-init
@@ -37,8 +39,6 @@ plugins/loop-harness/
     github/          issue, pull request and workflow templates (gates, release, mobile build)
     release/         release-please config and manifest
     docs/            architecture.md, data-model.md, adr/, coe/
-packages/
-  eslint-config/     shareable ESLint presets for the [LINT] rules
 examples/
   node-api/          minimal project wired to the gates, tested in CI
 .github/workflows/

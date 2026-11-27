@@ -46,6 +46,7 @@ const gateFiles = (pluginRoot) => {
 
 export const managedFiles = (pluginRoot, declared) => [
   ...[...ruleFiles(pluginRoot, declared), ...gateFiles(pluginRoot)].map(({ from, to }) => ({ to, content: text(from) })),
+  ...eslintFiles(pluginRoot, declared),
   ...Object.entries(HOOKS).map(([name, command]) => ({
     to: join('.githooks', name),
     content: `#!/bin/sh\n# Managed by loop-harness\n${command}\n`,
@@ -54,6 +55,41 @@ export const managedFiles = (pluginRoot, declared) => [
 ];
 
 const MOBILE_STACKS = new Set(['flutter', 'ionic']);
+const JS_LANGUAGES = new Set(['typescript', 'javascript']);
+const PRESET_BY_STACK = { angular: 'angular', ionic: 'angular', express: 'express' };
+const PRESET_PLUGINS = {
+  typescript: ['eslint', 'typescript-eslint', 'eslint-plugin-functional', 'eslint-plugin-unicorn'],
+  express: ['eslint-plugin-import-x'],
+  angular: ['angular-eslint', 'eslint-plugin-rxjs-x'],
+};
+const EMOJI_IN_PLUGIN = "'../../../scripts/gates/src/emoji.js'";
+const EMOJI_IN_PROJECT = "'../../gates/emoji.js'";
+
+const usesEslint = ({ languages }) => languages.some((language) => JS_LANGUAGES.has(language));
+
+export const presetFor = ({ stacks }) => PRESET_BY_STACK[stacks.find((stack) => stack in PRESET_BY_STACK)] ?? 'typescript';
+
+export const eslintFiles = (pluginRoot, declared) => {
+  if (!usesEslint(declared)) return [];
+  const dir = join(pluginRoot, 'presets', 'eslint', 'src');
+  return readdirSync(dir).map((file) => ({
+    to: join('.loop', 'eslint', 'src', file),
+    content: text(join(dir, file)).replaceAll(EMOJI_IN_PLUGIN, EMOJI_IN_PROJECT),
+  }));
+};
+
+export const eslintConfig = (declared) => {
+  const preset = presetFor(declared);
+  return `import { ${preset} } from './.loop/eslint/src/${preset}.js';\n\nexport default [\n  { ignores: ['.loop/**', 'coverage/**', 'dist/**'] },\n  ...${preset},\n  { languageOptions: { parserOptions: { tsconfigRootDir: import.meta.dirname } } },\n];\n`;
+};
+
+export const eslintDevDependencies = (pluginRoot, declared) => {
+  if (!usesEslint(declared)) return [];
+  const versions = JSON.parse(text(join(pluginRoot, 'presets', 'eslint', 'package.json'))).devDependencies;
+  const preset = presetFor(declared);
+  const names = preset === 'typescript' ? PRESET_PLUGINS.typescript : [...PRESET_PLUGINS.typescript, ...PRESET_PLUGINS[preset]];
+  return names.map((name) => `${name}@${versions[name]}`);
+};
 
 export const seedFiles = (pluginRoot, declared) => {
   const t = (...parts) => join(pluginRoot, 'templates', ...parts);

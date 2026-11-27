@@ -4,5 +4,5 @@ dist/
 .env.*
 .claude/settings.local.json
 .DS_Store
-packages/*/test/.fixtures/
+**/test/.fixtures/
 coverage/

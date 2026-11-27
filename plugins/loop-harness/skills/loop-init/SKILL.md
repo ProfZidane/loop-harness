@@ -24,7 +24,9 @@ Never write an emoji in anything you produce here. Keep every text short, plain,
 5. **Apply.** Run `apply . --languages <a,b> --stacks <x,y>`. It is idempotent:
    - managed files, refreshed on every run: `.loop/rules/`, `.loop/gates/`, `.githooks/`, the loop-harness block in `CLAUDE.md`, the attribution and deny rules in `.claude/settings.json`;
    - seeded files, created only if absent: `.loop/config.yml`, GitHub templates and workflows, release-please files, docs skeleton;
-   - `git config core.hooksPath .githooks`.
+   - `git config core.hooksPath .githooks`;
+   - for TypeScript and JavaScript projects: the ESLint presets copied into `.loop/eslint/` and an `eslint.config.js` seeded if absent. Nothing comes from npm except the ESLint plugins themselves.
+   Then install the returned `devDependencies` with the project package manager (`npm i -D ...`). If the project already has an ESLint config, do not overwrite it: show the owner the seeded config and let them choose.
    Report the file list to the owner as a short table.
 
 6. **Fill `.loop/config.yml`.** Edit values only, never the structure.

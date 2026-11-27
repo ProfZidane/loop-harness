@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { detect } from './init/detect.js';
 import { missingPacks, readDeclaredStack } from './init/packs.js';
 import { writeBlock, writeIfAbsent, writeManaged, mergeSettings } from './init/files.js';
-import { claudeBlock, configFor, managedFiles, releaseConfig, seedFiles } from './init/plan.js';
+import { claudeBlock, configFor, eslintConfig, eslintDevDependencies, managedFiles, releaseConfig, seedFiles } from './init/plan.js';
 
 const PLUGIN_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const template = (...parts) => readFileSync(join(PLUGIN_ROOT, 'templates', ...parts), 'utf8');
@@ -29,6 +29,9 @@ export const apply = (projectDir, declared) => {
     ...managedFiles(PLUGIN_ROOT, declared).map(({ to, content, mode }) => writeManaged({ path: at(to), content, mode })),
     ...seedFiles(PLUGIN_ROOT, declared).map(({ to, content }) => writeIfAbsent({ path: at(to), content })),
     writeIfAbsent({ path: at('release-please-config.json'), content: releaseConfig(PLUGIN_ROOT, declared) }),
+    ...(eslintDevDependencies(PLUGIN_ROOT, declared).length > 0
+      ? [writeIfAbsent({ path: at('eslint.config.js'), content: eslintConfig(declared) })]
+      : []),
     writeBlock({ path: at('CLAUDE.md'), block: claudeBlock(PLUGIN_ROOT, declared), fallback: template('claude', 'CLAUDE.md') }),
     mergeSettings({ path: at('.claude/settings.json'), template: JSON.parse(template('claude', 'settings.json')) }),
     setHooksPath(projectDir),
@@ -48,7 +51,9 @@ const commands = {
   apply: (dir, argv) => {
     const declared = { languages: list(option(argv, 'languages')), stacks: list(option(argv, 'stacks')) };
     const missing = missingPacks(PLUGIN_ROOT, declared);
-    return missing.length > 0 ? { error: 'missing rule packs', missing } : { files: apply(dir, declared) };
+    return missing.length > 0
+      ? { error: 'missing rule packs', missing }
+      : { files: apply(dir, declared), devDependencies: eslintDevDependencies(PLUGIN_ROOT, declared) };
   },
 };
 

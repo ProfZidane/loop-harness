@@ -4,7 +4,7 @@ project:
   stacks: [express]
 
 commands:
-  install: npm ci && npm ci --prefix ../../packages/eslint-config
+  install: npm ci && npm ci --prefix ../../plugins/loop-harness/presets/eslint
   lint: npm run lint
   typecheck: npm run typecheck
   test: npm run test:coverage

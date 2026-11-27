@@ -1,6 +1,6 @@
 # Language pack: TypeScript
 
-Applies to every TypeScript stack (Express, Angular, Ionic, others). Lint preset: `@loop-harness/eslint-config`.
+Applies to every TypeScript stack (Express, Angular, Ionic, others). Lint preset: `presets/eslint`, copied into `.loop/eslint/` by loop-init. Nothing is published to npm.
 
 ## Mapping of core principles
 

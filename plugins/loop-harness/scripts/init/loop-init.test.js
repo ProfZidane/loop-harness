@@ -7,6 +7,7 @@ import { join } from 'node:path';
 import { detect } from './detect.js';
 import { apply } from '../loop-init.mjs';
 import { missingPacks, readDeclaredStack } from './packs.js';
+import { eslintDevDependencies } from './plan.js';
 
 const pluginRoot = join(import.meta.dirname, '..', '..');
 
@@ -74,6 +75,16 @@ test('apply: keeps existing CLAUDE.md content and settings', () => {
   assert.equal(settings.model, 'x');
   assert.ok(settings.permissions.deny.includes('Read(./secret)'));
   assert.ok(settings.permissions.deny.includes('Edit(./.loop/**)'));
+});
+
+test('apply: copies the eslint preset and its config', () => {
+  const dir = nodeProject();
+  apply(dir, { languages: ['typescript'], stacks: ['express'] });
+  const plugin = readFileSync(join(dir, '.loop', 'eslint', 'src', 'plugin.js'), 'utf8');
+  assert.ok(plugin.includes("'../../gates/emoji.js'"));
+  assert.match(readFileSync(join(dir, 'eslint.config.js'), 'utf8'), /import \{ express \}/);
+  assert.deepEqual(eslintDevDependencies(pluginRoot, { languages: ['python'], stacks: [] }), []);
+  assert.ok(eslintDevDependencies(pluginRoot, { languages: ['typescript'], stacks: ['angular'] }).some((dep) => dep.startsWith('angular-eslint@')));
 });
 
 test('hooks: commit-msg rejects a bad message in a set-up project', () => {
