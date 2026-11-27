@@ -34,7 +34,7 @@ Tags: **[LINT]** enforced by linter/compiler · **[CI]** enforced by a test or C
 
 - **No magic numbers**: every business literal comes from a named constant. [LINT `no-magic-numbers` with ignore [0, 1, -1]]
 - **Self-explanatory code**: names of variables and functions carry the meaning. A comment exists only to explain a specific case (non-obvious constraint, external quirk, trap). No paraphrasing comments, no commented-out code; `TODO` only with an issue number `TODO(#42)`. [REVIEW + LINT `no-warning-comments` without issue ref]
-- **No emoji anywhere**: code, comments, logs, commits, PRs, issues, docs, notifications. [CI emoji check on diff + commitlint]
+- **No emoji, anywhere, ever.** Applies to everything the loop and its agents produce: code, comments, logs, product UI text, commits, branches, tags, release notes, PRs, issues, docs, plans, reviews, notifications, chat output. Not a CI-only rule: agents must never write one; CI is only the safety net. [REVIEW everywhere + CI emoji check on diff + commitlint]
 - Standard good practices apply by default (early return, no dead code, small pure functions). [REVIEW]
 
 ## 3. Naming & TypeScript
@@ -54,10 +54,36 @@ Tags: **[LINT]** enforced by linter/compiler · **[CI]** enforced by a test or C
 - Coverage ≥ 80 % of the diff on business logic folders (`services/`), blocking; elsewhere the reviewer judges relevance. [CI]
 - Gates: ESLint + Prettier, `tsc --noEmit`, knip (dead code), commitlint. [CI + pre-commit]
 
-## 5. Git
+## 5. Git, versions and releases
 
-- Commit: **one line**, English, no emoji, **no `Co-Authored-By`**, format `type(scope): description` (`feat(expense): add pagination to list`). [CI commitlint + attribution disabled in Claude Code settings]
+### GitHub Flow
+
+- `main` is always deployable. No `develop` branch, no long-lived branches.
+- One short-lived branch per ticket, merged into `main` (directly by the loop when low risk, through a PR otherwise).
 - Branch: `type/kebab-description` (`feat/expenses-pagination`). [CI]
+- Commit: **one line**, English, no emoji, **no `Co-Authored-By`**, format `type(scope): description` (`feat(expense): add pagination to list`). Breaking change: `type(scope)!: description`. [CI commitlint + attribution disabled in Claude Code settings]
+- Merge strategy: squash merge; the squash commit follows the commit format.
+
+### Versions and tags
+
+- Semantic Versioning, computed from commits, never by hand: `fix` → patch, `feat` → minor, `!` → major. [CI]
+- Annotated tags `vX.Y.Z` on `main` only. In a monorepo: `<package>-vX.Y.Z`. Tags are never moved or deleted.
+- Tool: release-please. It keeps a release PR open with the next version and the changelog; merging it creates the tag and the GitHub Release.
+
+### Releases
+
+- Every tag has a GitHub Release with notes generated from commits, grouped by type, plain text, no emoji.
+- `CHANGELOG.md` updated by the release PR only.
+- Release cadence is a project setting (`.loop/config.yml` → `release.strategy`): `batch` (default: release PR merged by the human when ready), `per-merge`, or `manual`.
+- Merging a release PR is always a human action. [PR]
+
+### Mobile apps
+
+- `versionName` / `CFBundleShortVersionString` = the semver from the tag; `versionCode` / `CFBundleVersion` = monotonic build number from CI, never reused. [CI]
+- One tag per store submission. A store release that fails review gets a new patch version, never a re-tag.
+- Store submission and phased rollout are human actions. [PR]
+- Release notes for stores are written from the same commits, in the UI language, plain text.
+- Breaking API changes must stay compatible with the oldest supported app version (mobile clients cannot be force-updated instantly): version the API or keep the old contract until the minimum supported version is raised. [REVIEW + PR]
 
 ## 6. Security (OWASP-driven)
 

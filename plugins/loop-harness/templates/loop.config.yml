@@ -56,6 +56,14 @@ loop:
     daemon: false
     window: null          # e.g. "22:00-07:00"
 
+release:
+  strategy: batch          # batch | per-merge | manual
+  tool: release-please
+  tagPrefix: v             # monorepo: "<package>-v"
+  mobile:
+    enabled: false
+    minSupportedVersion: null   # oldest app version the API must keep serving
+
 deploy:
   targets:
     - provider: vercel

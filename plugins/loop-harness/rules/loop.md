@@ -16,6 +16,7 @@ issue loop:ready
   → low risk: merge to main     sensitive: PR + human reviewer + notification
   → DEPLOY CHECK       Vercel / Railway CLI
   → issue loop:done    + docs updated (architecture, data-model, ADR)
+  → RELEASE            release-please keeps the release PR up to date; the human merges it → tag + GitHub Release
 ```
 
 ## Ticket source
