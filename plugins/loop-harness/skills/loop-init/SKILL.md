@@ -29,7 +29,8 @@ Never write an emoji in anything you produce here. Keep every text short, plain,
    Then install the returned `devDependencies` with the project package manager (`npm i -D ...`). If the project already has an ESLint config, do not overwrite it: show the owner the seeded config and let them choose.
    Report the file list to the owner as a short table.
 
-6. **Fill `.loop/config.yml`.** Edit values only, never the structure.
+6. **Fill `.loop/config.yml`.** Never edit it with the Edit or Write tools: `.loop/` is protected by the guard hook. Use the script, one `--set` per value:
+   `configure . --set ui.language=fr --set tests.criticalPaths=[login, checkout] --set commands.lint="npm run lint"`
    - `commands`: take them from the project itself (`package.json` scripts, `pyproject.toml`, Makefile). Leave a command empty rather than invent one.
    - Ask the owner, in at most two AskUserQuestion calls, what cannot be read from the code: UI language and multilingual, critical user paths, core business paths, auth transport, deploy targets, GitHub login for reviews, ntfy topic, recap email, release strategy, mobile minimum supported version.
    - Secrets never go in the file: only the names of the environment variables that hold them.

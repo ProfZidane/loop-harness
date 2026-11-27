@@ -28,7 +28,9 @@ plugins/loop-harness/
     stacks/          one pack per stack: express.md, mongo.md, angular.md
   scripts/
     gates/           dependency-free checks: emoji, commit messages, branch names
+    hooks/guard.mjs  PreToolUse guard: protected paths, no emoji, gates before commit
     loop-init.mjs    deterministic project setup used by the loop-init skill
+  hooks/hooks.json   registers the guard
   presets/
     eslint/          ESLint presets for the [LINT] rules, copied into projects by loop-init
   skills/

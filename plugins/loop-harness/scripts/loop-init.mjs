@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { detect } from './init/detect.js';
 import { missingPacks, readDeclaredStack } from './init/packs.js';
 import { writeBlock, writeIfAbsent, writeManaged, mergeSettings } from './init/files.js';
+import { setValue } from './init/yaml-lite.js';
 import { claudeBlock, configFor, eslintConfig, eslintDevDependencies, managedFiles, releaseConfig, seedFiles } from './init/plan.js';
 
 const PLUGIN_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -45,7 +46,23 @@ const option = (argv, name) => {
   return index === -1 ? undefined : argv[index + 1];
 };
 
+const parseSetting = (pair) => {
+  const separator = pair.indexOf('=');
+  const raw = pair.slice(separator + 1);
+  const value = raw.startsWith('[') ? list(raw.slice(1, -1)) : raw;
+  return [pair.slice(0, separator), value];
+};
+
+export const configure = (projectDir, pairs) => {
+  const path = join(projectDir, '.loop', 'config.yml');
+  const content = pairs.map(parseSetting).reduce((text, [key, value]) => setValue(text, key, value), readFileSync(path, 'utf8'));
+  return [writeManaged({ path, content })].map(({ status }) => ({ path: '.loop/config.yml', status }));
+};
+
+const settings = (argv) => argv.flatMap((token, index) => (token === '--set' ? [argv[index + 1]] : []));
+
 const commands = {
+  configure: (dir, argv) => ({ files: configure(dir, settings(argv)) }),
   detect: (dir) => detect(dir),
   check: (dir) => ({ missing: missingPacks(PLUGIN_ROOT, readDeclaredStack(dir)) }),
   apply: (dir, argv) => {
@@ -61,7 +78,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [command, dir = '.', ...rest] = process.argv.slice(2);
   const run = commands[command];
   if (!run) {
-    console.error('Usage: loop-init.mjs <detect|check|apply> [projectDir] [--languages a,b] [--stacks x,y]');
+    console.error('Usage: loop-init.mjs <detect|check|apply|configure> [projectDir] [--languages a,b] [--stacks x,y] [--set key=value]');
     process.exit(2);
   }
   const result = run(resolve(dir), rest);

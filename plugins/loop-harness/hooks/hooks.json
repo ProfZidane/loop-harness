@@ -1,0 +1,18 @@
+{
+  "description": "loop-harness guards: protected paths, no emoji, local gates before commit, no hook bypass, no force push",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/hooks/guard.mjs"],
+            "timeout": 600
+          }
+        ]
+      }
+    ]
+  }
+}
