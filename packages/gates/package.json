@@ -1,0 +1,16 @@
+{
+  "name": "@loop-harness/gates",
+  "version": "0.1.0",
+  "description": "Dependency-free convention gates: emoji, commit messages, branch names",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "loop-check-emoji": "./src/check-emoji.js",
+    "loop-check-commit": "./src/check-commit.js",
+    "loop-check-branch": "./src/check-branch.js"
+  },
+  "files": ["src"],
+  "scripts": {
+    "test": "node --test test/gates.test.js"
+  }
+}

@@ -110,6 +110,59 @@ jobs:
           [ ${#includes[@]} -gt 0 ] && args+=("--include" "${includes[@]}")
           diff-cover "${args[@]}"
 
+  conventions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ProfZidane/loop-harness
+          ref: main
+          path: .loop-harness
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Compute range
+        id: range
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          if [ "$EVENT" = "pull_request" ]; then
+            echo "value=origin/${BASE_REF}..HEAD" >> "$GITHUB_OUTPUT"
+          elif [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "value=${AFTER}~1..${AFTER}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${BEFORE}..${AFTER}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: No emoji in diff, commits and pull request
+        env:
+          RANGE: ${{ steps.range.outputs.value }}
+          PR_TEXT: ${{ github.event.pull_request.title }} ${{ github.event.pull_request.body }}
+        run: node .loop-harness/packages/gates/src/check-emoji.js --range "$RANGE" --text "$PR_TEXT"
+
+      - name: Commit messages
+        env:
+          RANGE: ${{ steps.range.outputs.value }}
+        run: node .loop-harness/packages/gates/src/check-commit.js --range "$RANGE"
+
+      - name: Pull request title and branch
+        if: github.event_name == 'pull_request'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          node .loop-harness/packages/gates/src/check-commit.js --text "$TITLE"
+          node .loop-harness/packages/gates/src/check-branch.js --name "$BRANCH"
+
   security:
     runs-on: ubuntu-latest
     defaults:
